@@ -59,6 +59,10 @@ class Ecs:
         # 处理都柏林地区的特殊情况
         if region_id == "eu-west-101":
             return f"https://ecs.{region_id}.myhuaweicloud.eu"
+        # 处理金融专区
+        elif region_id == "cn-north-219": 
+           return f"https://ecs.{region_id}.jrzq.huaweicloud.com"
+        
         
         return f"https://ecs.{region_id}.myhuaweicloud.com"
 
