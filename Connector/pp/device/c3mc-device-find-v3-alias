@@ -24,6 +24,19 @@ for( @data )
     map{ $res{$x->{$_}} = $x->{hostName} }qw( uuid inIP exIP ip );
 }
 
+if( grep{ $_ =~ /\.exmesg$/ }@node )
+{
+    my @exmesg  = `cat /data/Software/mydan/Connector/local/c3mc-mon-exmesg.txt`;
+    chomp @exmesg;
+
+   for( @exmesg )
+   {
+       $_ =~ /exmesg\{uuid="([^"]+)",desc="([^"]+)"\}/;
+       $res{$1} = $2;
+   }
+
+}
+
 my @miss;
 for my $x ( @node )
 {
