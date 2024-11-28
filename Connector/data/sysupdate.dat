@@ -1024,3 +1024,11 @@ ALTER TABLE  openc3_job_jobs modify `uuids` varchar(1200) DEFAULT NULL COMMENT '
 # v2.6.0 sql openc3_ci_version add realname
 ALTER TABLE openc3_ci_version ADD `realname` VARCHAR(100) DEFAULT '' comment '真实的版本名称';
 
+# v2.6.0 sql openc3_monitor_alarm_well_noted create
+create table if not exists `openc3_monitor_alarm_well_noted`(
+`id`        int(16) unsigned not null primary key auto_increment comment 'id',
+`user`      VARCHAR(200)   comment '用户',
+`caseuuid`  VARCHAR(100)   comment '事件ID',
+UNIQUE KEY `uniq_user_caseuuid` (`user`,`caseuuid`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 comment='告警已经被注意到,已知晓';
+
