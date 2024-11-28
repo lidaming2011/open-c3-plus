@@ -8,6 +8,7 @@
   <div class="admin-form row filter-switch">
     <div class="filter-switch-items">
       <button class="btn btn-primary interval-button-style" ng-disabled="allalerts.checkboxes.itemsNumber === 0 " uib-tooltip="{{'C3T.批量认领'|translate}}" ng-click="allalerts.handleBatchClaim()">{{'C3T.批量认领'| translate}}</button>
+      <button class="btn btn-primary interval-button-style" ng-disabled="allalerts.checkboxes.itemsNumber === 0 " uib-tooltip="{{'C3T.批量知晓'|translate}}" ng-click="allalerts.handleBatchNote()">{{'C3T.批量知晓'| translate}}</button>
     </div>
     <div class="filter-switch-items">
       <div class="filter-switch-items-label control-label fwbold">{{'C3T.显示已抑制的告警'|translate}}：</div>
@@ -83,6 +84,7 @@
                         <td data-title="'C3T.概要'|translate" data-sortable="'annotations.summary'" filter="{annotationsSummary: 'text'}">{{m.annotations.summary}}</td>
                         <td width="60" data-title="'C3T.值'|translate" data-sortable="'annotations.value'" filter="{annotationsValue: 'text'}">{{m.annotations.value}}</td>
                         <td class="textcenter"  data-title="'C3T.认领人'|translate" filter="{claimUuid: 'text'}"> {{allalerts.dealinfo[m.uuid]}} </td>
+                        <td class="textcenter"  data-title="'C3T.知晓'|translate" filter="{claimUuid: 'text'}"> {{allalerts.noteinfo[m.uuid]}} </td>
                         <td class="textcenter"  data-title="'C3T.关联工单'|translate">
                             <div ng-repeat="caseuuid in allalerts.tottbind[m.uuid]">
                                 <i class="fa fa-search fa-1x" aria-hidden="true" ng-click="allalerts.openTT(m.uuid, caseuuid)" uib-tooltip="{{'C3T.查看'|translate}}" style="cursor:pointer;color: #339094;" >{{caseuuid}}</i>
@@ -93,6 +95,7 @@
                            <button class="btn btn-primary btn-sm" ng-click="allalerts.openOneTab(m.generatorURL)">{{'C3T.查看图表'|translate}}</button>
                            <button class="btn btn-primary btn-sm" ng-click="allalerts.tott(m)" style="margin: 3px;">{{'C3T.转工单'|translate}}</button>
                            <button class="btn btn-primary btn-sm" ng-click="allalerts.deal(m, 'single', [])">{{'C3T.认领'|translate}}</button>
+                           <button class="btn btn-primary btn-sm" ng-click="allalerts.note(m, 'single', [])">{{'C3T.知晓'|translate}}</button>
                         </td>
                     </tr>
                 </table>
