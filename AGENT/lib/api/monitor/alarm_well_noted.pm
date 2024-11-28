@@ -50,4 +50,21 @@ post '/monitor/alarm_well_noted' => sub {
     return $@ ? +{ stat => $JSON::false, info => $@ } : +{ stat => $JSON::true };
 };
 
+=pod
+
+监控系统/获取告警知晓告警值班人
+
+=cut
+
+get '/monitor/alarm_well_noted_oncall' => sub {
+
+    my %res;
+    map{ $res{ "level$_" } = "null" }  1 ..3 ;
+    if( -f '/data/glusterfs/oncall/data/wellnoted' )
+    {
+	map{ my $x = `c3mc-app-usrext '%wellnoted:$_'`; chomp $x, $res{"level$_"} = $x;  }1..3;
+    }
+    return +{ stat => $JSON::true, data => \%res };
+};
+
 true;

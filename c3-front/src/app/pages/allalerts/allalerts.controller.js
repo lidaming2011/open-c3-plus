@@ -157,6 +157,20 @@
             });
         };
 
+
+        vm.getOncall = function () {
+            $http.get('/api/agent/monitor/alarm_well_noted_oncall').success(function(data){
+                if (data.stat){
+                    vm.oncall = data.data;
+                }else {
+                    swal({ title:'获取Oncall失败', text: data.info, type:'error' });
+                }
+            });
+        };
+
+
+        vm.getOncall();
+
         vm.reload();
 
         vm.getinstancename = function( labels ) {

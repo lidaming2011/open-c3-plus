@@ -1645,3 +1645,6 @@ Tag编辑: 'Tag edit'
 控制台: Console
 知晓: 'Noted'
 批量知晓: 'Batch Noted'
+一级值班人: Oncall level1
+二级值班人: Oncall level2
+三级值班人: Oncall level3
