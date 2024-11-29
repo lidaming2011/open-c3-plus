@@ -118,6 +118,24 @@
             });
         };
 
+        vm.oncallList = function () {
+	    var postData = { name: 'wellnoted'};
+            $uibModal.open({
+                templateUrl: 'app/pages/quickentry/monitoroncall/create/list.html',
+                controller: 'CreateMonitorOncallListController',
+                controllerAs: 'createMonitorOncallList',
+                backdrop: 'static',
+                size: 'lg',
+                keyboard: false,
+                bindToController: true,
+                resolve: {
+                    treeid: function () { return vm.treeid},
+                    reload: function () { return vm.reload},
+                    postData: function(){ return postData}
+                }
+            });
+        };
+
         vm.tottbind = {};
         vm.reloadB = function () {
             vm.loadBover = false;
