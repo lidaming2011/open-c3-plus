@@ -59,7 +59,12 @@
                 </button>
                 <button class="btn btn-primary refresh-style" uib-tooltip="{{'C3T.刷新'|translate}}" ng-click="allalerts.reload()" ><i class="fa fa-refresh fa-fw" ng-class="{'fa-spin':!allalerts.loadAover || !allalerts.loadBover || !allalerts.loadCover}" ></i></button>
             </span>
-	    <h5>{{'C3T.当前告警'|translate}} | {{'C3T.一级值班人'|translate}}: {{allalerts.oncall.level1}}  {{'C3T.二级值班人'|translate}}: {{allalerts.oncall.level2}} {{'C3T.三级值班人'|translate}}: {{allalerts.oncall.level3}}</h5>
+	    <h5 ng-if="!allalerts.oncall.oncall" >{{'C3T.当前告警'|translate}} </h5>
+	    <h5 ng-if="allalerts.oncall.oncall==1" >
+	        <i class="fa fa-list fa-2x" aria-hidden="true" ng-click="allalerts.oncallList()" uib-tooltip="{{'C3T.值班表'|translate}}" style="cursor:pointer;color: #3a0d33;font-size: 1em;" >{{'C3T.值班表'|translate}}</i>
+                {{'C3T.一级值班人'|translate}}: {{allalerts.oncall.level1}}  {{'C3T.二级值班人'|translate}}: {{allalerts.oncall.level2}} {{'C3T.三级值班人'|translate}}: {{allalerts.oncall.level3}}
+	    </h5>
+
         </div>
 
         <div class="panel-body">

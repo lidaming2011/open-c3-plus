@@ -58,11 +58,12 @@ post '/monitor/alarm_well_noted' => sub {
 
 get '/monitor/alarm_well_noted_oncall' => sub {
 
-    my %res;
+    my %res = ( oncall => 0 );
     map{ $res{ "level$_" } = "null" }  1 ..3 ;
     if( -f '/data/glusterfs/oncall/data/wellnoted' )
     {
 	map{ my $x = `c3mc-app-usrext '%wellnoted:$_'`; chomp $x, $res{"level$_"} = $x;  }1..3;
+	$res{oncall} = 1;
     }
     return +{ stat => $JSON::true, data => \%res };
 };
