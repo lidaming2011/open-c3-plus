@@ -1,0 +1,104 @@
+#!/data/Software/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+$|++;
+
+use JSON;
+use POSIX;
+use File::Temp;
+use Time::Local;
+use LWP::UserAgent;
+
+use Data::Dumper;
+
+=head1 SYNOPSIS
+
+ $0
+
+=cut
+
+my $ua = LWP::UserAgent->new;
+my $res = $ua->get( "http://OPENC3_ALERTMANAGER_IP:9093/api/v2/alerts");
+
+die unless $res->is_success;
+
+my $data = eval{JSON::from_json $res->content};
+
+exit unless -f '/data/glusterfs/oncall/data/wellnoted';
+
+sub gettime
+{
+    my $t = shift;
+    return ( $t, time ) unless $t =~ /^(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)\.\d+Z$/;
+    my $x = timelocal($6,$5,$4,$3,$2-1,$1);
+    my $sec = $x + 8 * 3600;
+    my $str = POSIX::strftime( "%Y-%m-%d %H:%M:%S", localtime( $sec ) );
+    return ( $str, $sec );
+}
+
+my @data;
+map{
+    ( $_->{startsAtStr}, $_->{startsAtSec}  ) = gettime( $_->{startsAt} );
+    my $t = $_->{startsAtStr}; $t =~ s/ /T/g;
+    $_->{uuid} = $_->{fingerprint} . '.'. $t;
+    push @data, +{
+        uuid  => $_->{uuid},
+        level => $_->{labels}{severity},
+        startsAtStr => $_->{startsAtStr},
+        startsAtSec => $_->{startsAtSec}
+    };
+}@$data;
+
+my %deal;
+map{
+    my @x = `$_`;
+    chomp @x;
+    map{$deal{$_}++}@x;
+}(
+    'c3mc-base-db-get caseuuid -t openc3_monitor_serialcall_deal',
+    'c3mc-base-db-get caseuuid -t openc3_monitor_alarm_well_noted'
+);
+
+my %count = ( level1 => 0, level2 => 0, level3 => 0 );
+for my $d ( @data )
+{
+    next if $d->{level} ne 'level1' || $deal{$d->{uuid}};
+
+    my $x = time - $d->{startsAtSec};
+
+    $count{level1} ++;
+    $count{level2} ++ if $x > 1800;
+    $count{level3} ++ if $x > 3600;
+
+}
+
+my $path = '/data/open-c3-data/monitor-wellnoted';
+system "mkdir -p '$path'" unless -d $path;
+
+print "#" x 80, "\n";
+print Dumper \%count;
+
+for my $level ( 1..3 )
+{
+    my $mark = "$path/level$level";
+    my $lasttime = `cat '$mark' 2>/dev/null`;
+    chomp $lasttime;
+    $lasttime = 0 unless $lasttime && $lasttime =~ /^\d+$/;
+
+    my $mmm = $count{"level$level"};
+    my $time = time;
+    my $ttt = POSIX::strftime( "%Y-%m-%d_%H:%M:%S", localtime );
+
+    print "-" x 80, "\n";
+    print "lastime: $lasttime ; count:$mmm time:$ttt\n";
+
+    next if $lasttime + 300 > $time || $mmm == 0;
+
+    system "c3mc-app-usrext '%wellnoted:$level' | xargs -i{} bash -c \"cat /data/Software/mydan/Connector/pp/mmon/wellnoted/mesg.txt |sed 's/XXX/{}/g' | sed 's/LLL/$level/g'| sed 's/MMM/$mmm/g' | sed 's/TTT/$ttt/g'\""; # for log only
+
+    system "c3mc-app-usrext '%wellnoted:$level' | xargs -i{} bash -c \"cat /data/Software/mydan/Connector/pp/mmon/wellnoted/mesg.txt |sed 's/XXX/{}/g' | sed 's/LLL/$level/g'| sed 's/MMM/$mmm/g' | sed 's/TTT/$ttt/g'| c3mc-base-send\"";
+
+    system "echo '$time' > $mark";
+}
+

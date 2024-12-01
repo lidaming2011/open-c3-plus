@@ -1,0 +1,5 @@
+title: 告警通知
+content: LLL级告警人XXX,有MMM条告警信息需要处理, 时间:TTT
+mesg: LLL级告警人XXX,您有MMM条告警信息需要处理, 时间:TTT
+call: LLL级告警人XXX,您有MMM条告警信息需要处理, 时间:TTT
+to: XXX
