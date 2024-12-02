@@ -1,0 +1,58 @@
+#!/data/Software/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+$|++;
+
+=head1 SYNOPSIS
+
+ $0
+
+=cut
+
+my @x = `cat /etc/cron.d/openc3.* 2>/dev/null`;
+chomp @x;
+
+my %data;
+for my $x ( @x )
+{
+    $x =~ s/#.*//g;
+    next unless $x =~ /^(\S+)\s+(\S+)\s+.*\s([^S]+.log)\b/;
+    my ( $m, $h, $log ) = ( $1, $2, $3 );
+
+    my $interval = 60;
+
+    if( $m eq '*' && $m eq '*' )
+    {
+        $interval = 60;
+    }
+    elsif( $m eq '*' )
+    {
+        $interval = 60;
+    }
+    elsif( $h eq '*')
+    {
+        if( $m =~ /^\d+$/ )
+        {
+            $interval = 3600;
+        }
+        elsif( $m =~ /^\*\/(\d+)$/ )
+        {
+            $interval = 60 * $1;
+        }
+        else
+        {
+            $interval = 60;
+        }
+    }
+    else
+    {
+        $interval = 3600 * 24;
+    }
+
+    my $mtime = -f $log ? (stat $log)[9] : 0;
+    my $ltime = time - $mtime;
+
+    my $stat = $ltime > $interval * 2 ? 0 : 1;
+    print "c3status{type=\"crontab\",name=\"$log\"} $stat\n";
+}

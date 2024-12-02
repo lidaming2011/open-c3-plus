@@ -1,0 +1,19 @@
+#!/data/Software/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+$|++;
+
+=head1 SYNOPSIS
+
+ $0
+
+=cut
+
+chdir "/data/Software/mydan/Connector/pp/mmon/c3status" or die "chdir fail: $!";
+
+for my $name ( qw( crontab ) )
+{
+    my $stat = system( "./$name" ) ? 0 : time;
+    print "c3status_time{type=\"$name\"} $stat\n";
+}
