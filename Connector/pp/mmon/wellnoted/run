@@ -60,6 +60,12 @@ map{
     'c3mc-base-db-get caseuuid -t openc3_monitor_alarm_well_noted'
 );
 
+print "#" x 80, "\n";
+my $hour = POSIX::strftime( "%H", localtime );
+print "hour: $hour\n";
+
+my $ui = ( $hour >= 9 and $hour <= 22 ) ? 900 : 1800;
+
 my %count = ( level1 => 0, level2 => 0, level3 => 0 );
 for my $d ( @data )
 {
@@ -68,15 +74,14 @@ for my $d ( @data )
     my $x = time - $d->{startsAtSec};
 
     $count{level1} ++;
-    $count{level2} ++ if $x > 1800;
-    $count{level3} ++ if $x > 3600;
+    $count{level2} ++ if $x > $ui;
+    $count{level3} ++ if $x > $ui * 2;
 
 }
 
 my $path = '/data/open-c3-data/monitor-wellnoted';
 system "mkdir -p '$path'" unless -d $path;
 
-print "#" x 80, "\n";
 print Dumper \%count;
 
 for my $level ( 1..3 )
