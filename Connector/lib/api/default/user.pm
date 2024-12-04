@@ -280,12 +280,20 @@ any '/default/user/login' => sub {
         my @chars = ( "A" .. "Z", "a" .. "z", 0 .. 9 );
         my $keys = join("", @chars[ map { rand @chars } ( 1 .. 64 ) ]);
 
+        my $oldkeys = eval{ $api::mysql->query( "select sid,expire from openc3_connector_userinfo where name='$user'" ); };
+        return +{ stat => $JSON::false, info => $@ } if $@;
+        if( $oldkeys && @$oldkeys )
+        {
+            my ( $oldsid, $oldexpire ) = @{$oldkeys->[0]};
+            $keys = $oldsid if $oldexpire && $oldexpire =~ /^\d+$/ && $oldexpire + 8 * 3600 > time ;
+        }
+
         my $uuid = Digest::MD5->new->add($pass)->hexdigest;
 
         my $mfa = eval{ $api::mysql->query( "select type from `openc3_connector_mfa` where user='$user' and status='on'" ) };
         return +{ stat => $JSON::false, info => "get mfa fail:$@" } if $@;
 
-        eval{ $api::mysql->execute(  "insert into openc3_connector_mfakey(`user`,`keys`,`pwmd5`,`time`)values('$user','$keys','$uuid','$time')" ); };
+        eval{ $api::mysql->execute(  "replace into openc3_connector_mfakey(`user`,`keys`,`pwmd5`,`time`)values('$user','$keys','$uuid','$time')" ); };
         return +{ stat => $JSON::false, info => $@ } if $@;
 
         if( $mfa && @$mfa && $mfa->[0][0] ne '' )
