@@ -1,0 +1,163 @@
+<cmloading ng-if="!allalerts.loadover"></cmloading>
+<div style="height: 40px;" ></div>
+<div class="row block" >
+
+<div>
+  <div class="admin-form row filter-switch" style="font-size: 9px;">
+    <div class="filter-switch-items" ng-show="allalerts.checkboxes.itemsNumber === 0 ">
+
+      <div class="filter-switch-items-label control-label fwbold">{{'级别'}}：</div>
+      <div class="filter-switch-items-context">
+        <ui-select class="" ng-model="allalerts.alarmLevel" placeholder="{{'级别'}}" ng-change="allalerts.handleAlarmChange($select.selected.value)">
+          <ui-select-match placeholder="{{'级别'}}"><span class="item-label">{{$select.selected.label}}</span></ui-select-match>
+          <ui-select-choices repeat="item.value as item in allalerts.levelOption | filter: $select.search"><div ng-bind-html="item.label | highlight: $select.search"></div></ui-select-choices>
+        </ui-select>
+      </div>
+ 
+
+      <div class="filter-switch-items-label control-label fwbold">{{'抑制'}}：</div>
+      <div class="filter-switch-items-context">
+        <label class="switch switch-system filter-switch-items-context-label">
+          <input type="checkbox" id="check_status" ng-model="allalerts.checknewstatus" ng-change="allalerts.handleSaveStatusChange()">
+          <label for="check_status" data-on="ON" data-off="OFF"></label>
+        </label>
+      </div>
+      <div class="filter-switch-items-label control-label fwbold">{{'认领'}}：</div>
+      <div class="filter-switch-items-context">
+        <label class="switch switch-system  filter-switch-items-context-label">
+          <input type="checkbox" id="claim_status" ng-model="allalerts.claimStatus" ng-change="allalerts.handleSaveStatusChange()">
+          <label for="claim_status" data-on="ON" data-off="OFF"></label>
+        </label>
+      </div>
+
+ .  </div>
+    <div class="filter-switch-items" ng-show="allalerts.checkboxes.itemsNumber !== 0 " >
+      <button class="btn btn-primary interval-button-style" ng-disabled="allalerts.checkboxes.itemsNumber === 0 " uib-tooltip="{{'批量认领'}}" ng-click="allalerts.handleBatchClaim()">{{'批量认领'}}</button>
+      <button class="btn btn-primary interval-button-style" ng-disabled="allalerts.checkboxes.itemsNumber === 0 " uib-tooltip="{{'批量知晓'}}" ng-click="allalerts.handleBatchNote()">{{'批量知晓'}}</button>
+
+    </div>
+    
+  </div>
+
+    <div class="panel panel-primary">
+
+        <div class="panel-heading">
+            <span class="panel-controls">
+                <button class="btn btn-primary refresh-style" uib-tooltip="{{'刷新'}}" ng-click="allalerts.reload()" ><i class="fa fa-refresh fa-fw" ng-class="{'fa-spin':!allalerts.loadAover || !allalerts.loadBover || !allalerts.loadCover}" ></i></button>
+            </span>
+	    <h5 ng-if="!allalerts.oncall.oncall" >{{'当前告警'}} </h5>
+	    <h5 ng-if="allalerts.oncall.oncall==1" >
+                值班: {{allalerts.oncall.level1}} | {{allalerts.oncall.level2}} | {{allalerts.oncall.level3}}
+	    </h5>
+
+        </div>
+
+        <div class="panel-body">
+            <div class="panel-tabs" style="overflow-x: auto;">
+                <table ng-table="allalerts.dataTable" class="table table-hover text-center table-condensed" show-filter="true">
+                    <tr ng-repeat="m in $data" ng-class="{'first-almost': m.labels.severity === 'level1','second-almost': m.labels.severity === 'level2','third-almost': m.labels.severity === 'level3','forth-almost': m.labels.severity === 'level4'}">
+                        <td header="'headerCheckbox.html'" data-title="">
+                          <input type="checkbox" name="selected" ng-model="allalerts.checkboxes.items[m.uuid]" />
+                        </td>  
+                        <td data-title="''" style="text-align: left;">
+                            开始时间: {{m.startsAt}}<br>
+                            持续时间: {{getDuration(m.startsAt)}}<br>
+                            名称:{{m.labels.alertname}}<br>
+                            监控对象:{{allalerts.getinstancename(m.labels)}}<br>
+                            Owner: {{m.owner}}<br>
+                            OpsOwner: {{m.opsowner}}<br>
+                            服务树:{{m.tree}}<br>
+                            资源别名:{{m.alias}}<br>
+                            操作系统:{{m.os}}<br>
+                            状态:{{m.status.state}}<br>
+                            告警级别:{{m.labels.severity}}<br>
+                            概要:{{m.annotations.summary}}<br>
+                            值:{{m.annotations.value}}<br>
+                            认领人:{{allalerts.dealinfo[m.uuid]}}<br>
+                            知晓:{{allalerts.noteinfo[m.uuid]}}<br>
+                            关联工单:
+                            <div ng-repeat="caseuuid in allalerts.tottbind[m.uuid]">
+                                <i class="fa fa-search fa-1x" aria-hidden="true" ng-click="allalerts.openTT(m.uuid, caseuuid)" uib-tooltip="{{'查看'}}" style="cursor:pointer;color: #339094;" >{{caseuuid}}</i>
+                            </div>
+                            <br>
+ 
+                           <button class="btn btn-primary btn-sm" ng-click="allalerts.openOneTab(m.generatorURL)">{{'查看图表'}}</button>
+                           <button class="btn btn-primary btn-sm" ng-click="allalerts.tott(m)" style="margin: 3px;">{{'转工单'}}</button>
+                           <button class="btn btn-primary btn-sm" ng-click="allalerts.deal(m, 'single', [])">{{'认领'}}</button>
+                           <button class="btn btn-primary btn-sm" ng-click="allalerts.note(m, 'single', [])">{{'知晓'}}</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="headerCheckbox.html">
+  <input type="checkbox" ng-model="allalerts.checkboxes.checked"  class="select-all"/>
+</script>
+
+</div>
+
+<style>
+  .filter-switch {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5px 7px;
+    flex:1
+  }
+
+  .filter-switch-items {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-right: 8px;
+  }
+
+  .filter-switch-items-label {
+    margin-right: 5px;
+  }
+
+  .filter-switch-items-context {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filter-switch-items-context-label {
+    margin-bottom: 0!important;
+  }
+
+  .first-almost {
+    background-color: #f5a2a2!important;
+  }
+
+  .second-almost {
+    background-color: #ebcccc!important;
+  }
+
+  .third-almost {
+    background-color: #faf2cc!important;
+  }
+
+  .forth-almost {
+    background-color: #d9edf7!important;
+  }
+
+  .interval-button-style {
+    margin:0 10px!important;
+  }
+
+  .device-export {
+    text-align: right;
+    background-color: transparent;
+    line-height: normal;
+    border-color: transparent;
+    padding: 12px;
+  }
+  .refresh-style {
+    margin-top: 0px;
+    padding-bottom: 3px;
+  }
+</style>
