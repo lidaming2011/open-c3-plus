@@ -365,6 +365,12 @@
                 controller: 'ApprovalController',
                 controllerAs: 'approval'
             })
+            .state('home.allalerts', {
+                url: 'allalerts',
+                templateUrl: 'app/pages/allalerts/allalerts.html',
+                controller: 'AllalertsController',
+                controllerAs: 'allalerts'
+            })
             .state('home.assignment', {
                 url: 'assignment/:treeid',
                 templateUrl: 'app/pages/assignment/assignment.html',
@@ -572,7 +578,7 @@
             });
 
 
-        $urlRouterProvider.otherwise('/approval');
+        $urlRouterProvider.otherwise('/allalerts');
     }
 
 })();
