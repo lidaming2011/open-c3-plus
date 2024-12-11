@@ -30,7 +30,7 @@ while(<STDIN>)
 
 sub save{
     my ( $db, $instance, $fingerprint, $startsAt, $alertname, $jobname ) = @_;
-    my $r = eval{ $db->query( "select id from openc3_monitor_self_healing_task where jobname='$jobname' and taskstat!='success' and taskstat!='fail'" ); };   
+    my $r = eval{ $db->query( "select id from openc3_monitor_self_healing_task where jobname='$jobname' and taskstat!='success' and taskstat!='fail' and taskstat != 'refuse'" ); };   
     return unless $r && ref $r eq 'ARRAY' && @$r == 0;
 
     my $x = eval{ $db->query( "select id from openc3_monitor_self_healing_task where instance='$instance' and fingerprint='$fingerprint' and startsAt ='$startsAt'" ); };   
