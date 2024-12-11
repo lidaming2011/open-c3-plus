@@ -1032,3 +1032,6 @@ create table if not exists `openc3_monitor_alarm_well_noted`(
 UNIQUE KEY `uniq_user_caseuuid` (`user`,`caseuuid`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 comment='告警已经被注意到,已知晓';
 
+# v2.6.0 sql openc3_monitor_self_healing_task modify instance to 300
+ALTER TABLE  openc3_monitor_self_healing_task modify `instance` varchar(300) DEFAULT NULL COMMENT '目标';
+
