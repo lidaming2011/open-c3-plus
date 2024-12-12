@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BASE_PATH=/data/open-c3
+C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+
+BASE_PATH=$C3BASEPATH/open-c3
 cd $BASE_PATH || exit 1
 
 function list() {

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BASE_PATH=/data/open-c3
+C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+
+BASE_PATH=$C3BASEPATH/open-c3
 
 if [ "X$OPENC3VERSION" == "X" ]; then
     OPENC3VERSION=v2.2.0
@@ -64,13 +66,13 @@ function install() {
     echo =================================================================
     echo "[INFO]get open-c3 ..."
     if [ ! -d $BASE_PATH ]; then
-        if [ ! -d /data ];then
-            mkdir /data
+        if [ ! -d $C3BASEPATH ];then
+            mkdir $C3BASEPATH
         fi
-        if [ -d /data/open-c3-installer/open-c3 ];then
-            cd /data && cp -r /data/open-c3-installer/open-c3 .
+        if [ -d $C3BASEPATH/open-c3-installer/open-c3 ];then
+            cd $C3BASEPATH && cp -r $C3BASEPATH/open-c3-installer/open-c3 .
         else
-            cd /data && git clone -b "$OPENC3VERSION" $GITADDR/open-c3/open-c3
+            cd $C3BASEPATH && git clone -b "$OPENC3VERSION" $GITADDR/open-c3/open-c3
         fi
     fi
 
@@ -86,7 +88,7 @@ function install() {
     echo =================================================================
     echo "[INFO]pkg extract ..."
 
-    /data/open-c3/Installer/C3/pkg/extract.sh
+    $C3BASEPATH/open-c3/Installer/C3/pkg/extract.sh
 
     if [ $? = 0 ]; then
         echo "[SUCC]pkg extract success."
@@ -147,8 +149,8 @@ function install() {
 #    echo "[INFO]get open-c3-install-cache ..."
 #
 #    if [ ! -d "$BASE_PATH/Installer/install-cache" ]; then
-#        if [ -d /data/open-c3-installer/install-cache ];then
-#            cd $BASE_PATH/Installer && cp -r /data/open-c3-installer/install-cache .
+#        if [ -d $C3BASEPATH/open-c3-installer/install-cache ];then
+#            cd $BASE_PATH/Installer && cp -r $C3BASEPATH/open-c3-installer/install-cache .
 #        else
 #            cd $BASE_PATH/Installer && git clone $GITADDR/open-c3/open-c3-install-cache install-cache
 #        fi
@@ -191,8 +193,8 @@ function install() {
 
     rm -rf $BASE_PATH/c3-front/dist/book
 
-    if [ -d /data/open-c3-installer/book ]; then
-        cp -r /data/open-c3-installer/book $BASE_PATH/c3-front/dist/book
+    if [ -d $C3BASEPATH/open-c3-installer/book ]; then
+        cp -r $C3BASEPATH/open-c3-installer/book $BASE_PATH/c3-front/dist/book
     else
         cd $BASE_PATH/c3-front/dist && git clone $GITADDR/open-c3/open-c3.github.io book
     fi
@@ -287,14 +289,14 @@ function install() {
     echo "User: open-c3"
     echo "Password: changeme"
 
-    echo "[INFO]Run command to start service: /data/open-c3/open-c3.sh start"
+    echo "[INFO]Run command to start service: $C3BASEPATH/open-c3/open-c3.sh start"
 
     echo =================================================================
     echo "[INFO]tt-front build ..."
 
-    mkdir -p /data/open-c3/c3-front/dist/tt
-    rsync  -av /data/open-c3/Installer/install-cache/trouble-ticketing/tt-front/dist/ /data/open-c3/c3-front/dist/tt/ --delete
-    rsync -av /data/open-c3/Connector/tt/tt-front/src/assets/images/  /data/open-c3/c3-front/dist/assets/images/
+    mkdir -p $C3BASEPATH/open-c3/c3-front/dist/tt
+    rsync  -av $C3BASEPATH/open-c3/Installer/install-cache/trouble-ticketing/tt-front/dist/ $C3BASEPATH/open-c3/c3-front/dist/tt/ --delete
+    rsync -av $C3BASEPATH/open-c3/Connector/tt/tt-front/src/assets/images/  $C3BASEPATH/open-c3/c3-front/dist/assets/images/
 
     if [ $? = 0 ]; then
         echo "[SUCC]tt-front build success."
@@ -306,12 +308,12 @@ function install() {
     echo =================================================================
     echo "[INFO]copy trouble-ticketing ..."
 
-    COOKIEKEY=$(cat /data/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
-    sed -i "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" /data/open-c3/Connector/tt/trouble-ticketing/cfg.json
+    COOKIEKEY=$(cat $C3BASEPATH/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
+    sed -i "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/cfg.json
 
-    cp /data/open-c3/Connector/pkg/trouble-ticketing /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$
-    mv /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$ /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
-    chmod +x /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
+    cp $C3BASEPATH/open-c3/Connector/pkg/trouble-ticketing $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$
+    mv $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$ $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
+    chmod +x $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
 
     if [ $? = 0 ]; then
         echo "[SUCC]copy trouble-ticketing success."
@@ -320,13 +322,13 @@ function install() {
         exit 1
     fi
 
-    if [ -d /data/open-c3-installer/dev-cache ];then
-        cp -r /data/open-c3-installer/dev-cache /data/open-c3/Installer/
+    if [ -d $C3BASEPATH/open-c3-installer/dev-cache ];then
+        cp -r $C3BASEPATH/open-c3-installer/dev-cache $C3BASEPATH/open-c3/Installer/
     fi
-    /data/open-c3/Installer/scripts/dev.sh build
+    $C3BASEPATH/open-c3/Installer/scripts/dev.sh build
 
-    /data/open-c3/open-c3.sh start
-    /data/open-c3/open-c3.sh sup
+    $C3BASEPATH/open-c3/open-c3.sh start
+    $C3BASEPATH/open-c3/open-c3.sh sup
     docker exec openc3-server /data/Software/mydan/Connector/app/c3-restart
 
     echo =================================================================
@@ -342,16 +344,16 @@ function install() {
         fi
     fi
 
-    mkdir -p /data/open-c3-data/grafana-data
-    rsync -av /data/open-c3/Installer/install-cache/grafana-data/ /data/open-c3-data/grafana-data/
+    mkdir -p $C3BASEPATH/open-c3-data/grafana-data
+    rsync -av $C3BASEPATH/open-c3/Installer/install-cache/grafana-data/ $C3BASEPATH/open-c3-data/grafana-data/
 
 
     echo sleep 60 sec ...
     sleep 60
 
-    /data/open-c3/open-c3.sh sup
-    /data/open-c3/open-c3.sh dup
-    /data/open-c3/open-c3.sh start
+    $C3BASEPATH/open-c3/open-c3.sh sup
+    $C3BASEPATH/open-c3/open-c3.sh dup
+    $C3BASEPATH/open-c3/open-c3.sh start
 }
 
 function start() {
@@ -370,52 +372,52 @@ function start() {
 
 #prometheus
 
-    mkdir -p /data/open-c3-data/prometheus-data
-    chmod 777 /data/open-c3-data/prometheus-data
+    mkdir -p $C3BASEPATH/open-c3-data/prometheus-data
+    chmod 777 $C3BASEPATH/open-c3-data/prometheus-data
 
-    if [ ! -f /data/open-c3/prometheus/config/prometheus.yml ];then
-        cp /data/open-c3/prometheus/config/prometheus.example.yml /data/open-c3/prometheus/config/prometheus.yml
+    if [ ! -f $C3BASEPATH/open-c3/prometheus/config/prometheus.yml ];then
+        cp $C3BASEPATH/open-c3/prometheus/config/prometheus.example.yml $C3BASEPATH/open-c3/prometheus/config/prometheus.yml
     fi
 
-    if [ ! -f /data/open-c3/prometheus/config/openc3_node_sd.yml ];then
-        cp /data/open-c3/prometheus/config/openc3_node_sd.example.yml /data/open-c3/prometheus/config/openc3_node_sd.yml
+    if [ ! -f $C3BASEPATH/open-c3/prometheus/config/openc3_node_sd.yml ];then
+        cp $C3BASEPATH/open-c3/prometheus/config/openc3_node_sd.example.yml $C3BASEPATH/open-c3/prometheus/config/openc3_node_sd.yml
     fi
 #
 
 #alertmanager
 
-    if [ ! -f /data/open-c3/alertmanager/config/alertmanager.yml ];then
-        cp /data/open-c3/alertmanager/config/alertmanager.example.yml /data/open-c3/alertmanager/config/alertmanager.yml
+    if [ ! -f $C3BASEPATH/open-c3/alertmanager/config/alertmanager.yml ];then
+        cp $C3BASEPATH/open-c3/alertmanager/config/alertmanager.example.yml $C3BASEPATH/open-c3/alertmanager/config/alertmanager.yml
     fi
 
 #
 
 #lua.1
-    mkdir -p /data/open-c3/lua/lualib
-    rsync -av /data/open-c3/Installer/install-cache/lualib/ /data/open-c3/lua/lualib/
+    mkdir -p $C3BASEPATH/open-c3/lua/lualib
+    rsync -av $C3BASEPATH/open-c3/Installer/install-cache/lualib/ $C3BASEPATH/open-c3/lua/lualib/
 #
 
     cd $BASE_PATH/Installer/C3/ && ../docker-compose -f $DCF up -d --build
 
 #grafana
 
-    docker cp /data/open-c3/grafana/config/grafana.ini openc3-grafana:/etc/grafana/grafana.ini
+    docker cp $C3BASEPATH/open-c3/grafana/config/grafana.ini openc3-grafana:/etc/grafana/grafana.ini
     docker restart openc3-grafana
 
-    docker cp /data/open-c3/grafana/config/grafana-fresh.ini openc3-grafana-fresh:/etc/grafana/grafana.ini
+    docker cp $C3BASEPATH/open-c3/grafana/config/grafana-fresh.ini openc3-grafana-fresh:/etc/grafana/grafana.ini
     docker restart openc3-grafana-fresh
 #
 
 #lua
 
-    cp /data/open-c3/lua/config/lua/sso.example.lua /data/open-c3/lua/config/lua/sso.temp.lua
+    cp $C3BASEPATH/open-c3/lua/config/lua/sso.example.lua $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
     #OPENC3 TODO 这里ip替换域名是lua解析容器中的域名失败
 #    REIP=$(docker exec -it openc3-lua ping -c 1 OPENC3_SERVER_IP|grep openc3-server.c3_JobNet|awk -F '[()]' '{print $2}'|grep ^[0-9\.]*$|tail -n 1 )
-    COOKIEKEY=$(cat /data/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
-#    sed -i "s/OPENC3_SERVER_IP/$REIP/" /data/open-c3/lua/config/lua/sso.temp.lua
-    sed -i "s/ngx.var.cookie_sid/ngx.var.cookie_$COOKIEKEY/g" /data/open-c3/lua/config/lua/sso.temp.lua
+    COOKIEKEY=$(cat $C3BASEPATH/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
+#    sed -i "s/OPENC3_SERVER_IP/$REIP/" $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
+    sed -i "s/ngx.var.cookie_sid/ngx.var.cookie_$COOKIEKEY/g" $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
 
-    cp /data/open-c3/lua/config/lua/sso.temp.lua /data/open-c3/lua/config/lua/sso.lua
+    cp $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua $C3BASEPATH/open-c3/lua/config/lua/sso.lua
 
     docker restart  openc3-lua
 #
@@ -493,10 +495,10 @@ function sup() {
 }
 
 function cmdbdemo() {
-    /data/open-c3/Installer/scripts/cmdb-demo.sh
+    $C3BASEPATH/open-c3/Installer/scripts/cmdb-demo.sh
 }
 
-OPENC3_ZONE_CHECK=$(cat /data/open-c3/.git/config |grep gitee.com/open-c3/open-c3|wc -l)
+OPENC3_ZONE_CHECK=$(cat $C3BASEPATH/open-c3/.git/config |grep gitee.com/open-c3/open-c3|wc -l)
 if [ "X$OPENC3_ZONE_CHECK" == "X1" ];then
     export OPENC3_ZONE=CN
 fi

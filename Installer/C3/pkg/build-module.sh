@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+
 MODULE=$1
 VERSION=$2
 
@@ -9,7 +11,7 @@ if [ "X$MODULE" == "X" ] || [ "X$VERSION" == "X" ];then
     exit 1
 fi
 
-cd /data/open-c3/Installer/C3/pkg || exit 1
+cd $C3BASEPATH/open-c3/Installer/C3/pkg || exit 1
 
 rm -rf $MODULE/tempdata
 rm -rf $MODULE/_tempdata

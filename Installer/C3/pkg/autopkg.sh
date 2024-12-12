@@ -1,8 +1,10 @@
 #!/bin/bash
 
+C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+
 set -e
 
-cd /data/open-c3/Installer/C3/pkg || exit
+cd $C3BASEPATH/open-c3/Installer/C3/pkg || exit
 
 git pull
 

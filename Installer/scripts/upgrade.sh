@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BASE_PATH=/data/open-c3
+C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+
+BASE_PATH=$C3BASEPATH/open-c3
 cd $BASE_PATH || exit 1
 
 function upgradeSelf() {
@@ -45,7 +47,7 @@ function upgradeSelf() {
     echo =================================================================
     echo "[INFO]pkg extract ..."
 
-    /data/open-c3/Installer/C3/pkg/extract.sh
+    $C3BASEPATH/open-c3/Installer/C3/pkg/extract.sh
 
     if [ $? = 0 ]; then
         echo "[SUCC]pkg extract success."
@@ -116,9 +118,9 @@ function upgradeSelf() {
     echo =================================================================
     echo "[INFO]tt-front build ..."
 
-    mkdir -p /data/open-c3/c3-front/dist/tt
-    rsync  -av /data/open-c3/Installer/install-cache/trouble-ticketing/tt-front/dist/ /data/open-c3/c3-front/dist/tt/ --delete
-    rsync -av /data/open-c3/Connector/tt/tt-front/src/assets/images/  /data/open-c3/c3-front/dist/assets/images/
+    mkdir -p $C3BASEPATH/open-c3/c3-front/dist/tt
+    rsync  -av $C3BASEPATH/open-c3/Installer/install-cache/trouble-ticketing/tt-front/dist/ $C3BASEPATH/open-c3/c3-front/dist/tt/ --delete
+    rsync -av $C3BASEPATH/open-c3/Connector/tt/tt-front/src/assets/images/  $C3BASEPATH/open-c3/c3-front/dist/assets/images/
 
     if [ $? = 0 ]; then
         echo "[SUCC]tt-front build success."
@@ -130,12 +132,12 @@ function upgradeSelf() {
     echo =================================================================
     echo "[INFO]copy trouble-ticketing ..."
 
-    COOKIEKEY=$(cat /data/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
-    sed -i "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" /data/open-c3/Connector/tt/trouble-ticketing/cfg.json
+    COOKIEKEY=$(cat $C3BASEPATH/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
+    sed -i "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/cfg.json
 
-    cp /data/open-c3/Connector/pkg/trouble-ticketing /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$
-    mv /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$ /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
-    chmod +x /data/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
+    cp $C3BASEPATH/open-c3/Connector/pkg/trouble-ticketing $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$
+    mv $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$ $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
+    chmod +x $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
 
     if [ $? = 0 ]; then
         echo "[SUCC]copy trouble-ticketing success."
@@ -146,7 +148,7 @@ function upgradeSelf() {
 
     echo =================================================================
     echo "[INFO]golang build ..."
-    find /data/open-c3/Connector/pp -name golang-build.sh|sed "s/\/golang-build.sh$//"|xargs -i{} bash -c "echo golang build {} && cd {} && ./golang-build.sh"
+    find $C3BASEPATH/open-c3/Connector/pp -name golang-build.sh|sed "s/\/golang-build.sh$//"|xargs -i{} bash -c "echo golang build {} && cd {} && ./golang-build.sh"
 
     if [ $? = 0 ]; then
         echo "[SUCC]golang build success."
