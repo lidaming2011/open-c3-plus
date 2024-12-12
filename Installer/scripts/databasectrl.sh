@@ -1,6 +1,6 @@
 #!/bin/bash
 
-C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
 
 if [ "X$OpenC3_Backup_ContainersName" == "X" ]; then
     OpenC3_Backup_ContainersName=openc3-mysql

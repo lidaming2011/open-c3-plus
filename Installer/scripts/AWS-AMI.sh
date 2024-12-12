@@ -1,6 +1,6 @@
 #!/bin/bash
 
-C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac) 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
 
 # 制作AWS AMI时可以执行这个脚本清理文件
 

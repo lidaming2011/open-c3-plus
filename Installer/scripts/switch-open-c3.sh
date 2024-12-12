@@ -1,6 +1,6 @@
 #!/bin/bash
 
-C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
 
 #该工具用于在OPEN-C3开发过程中进行版本切换。
 #在开发过程中可能需要管理多个版本的环境，一个环境包含两个目录 $C3BASEPATH/open-c3 和 $C3BASEPATH/open-c3-data

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-C3BASEPATH=$(case  $(uname -s) in Darwin*) echo "$HOME/open-c3-workspace";; *) echo "/data";; esac)
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
 
 logFile=$C3BASEPATH/open-c3-data/logs/singleAutoUpdate.log
 exec >> $logFile 2>&1 
