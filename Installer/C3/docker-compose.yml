@@ -11,7 +11,7 @@ services:
     image: "mysql:5.7"
     restart: always
     volumes:
-      - "/data/open-c3-data/mysql-data:/var/lib/mysql"
+      - "../../../open-c3-data/mysql-data:/var/lib/mysql"
       - "./mysql/conf/my.cnf:/etc/my.cnf"
       - "./mysql/init:/docker-entrypoint-initdb.d/"
     networks:
@@ -48,15 +48,15 @@ services:
       - "../../prometheus:/data/Software/mydan/prometheus"
       - "../../c3-front:/data/Software/mydan/c3-front"
       - "../../web-shell:/data/Software/mydan/web-shell"
-      #- "./JOB/auth:/data/Software/mydan/etc/agent/auth"  
-      #- "./JOB/logs:/data/logs" 
-      #- "./JOB/glusterfs:/data/glusterfs" 
-      - "/data/open-c3-data/auth:/data/Software/mydan/etc/agent/auth"  
-      - "/data/open-c3-data/logs:/data/logs" 
-#      - "/data/open-c3-data/glusterfs:/data/glusterfs" 
-      - "/data/open-c3-data:/data/open-c3-data" 
-      - "/bin/docker:/bin/docker" 
-      - "/var/run/docker.sock:/var/run/docker.sock" 
+      #- "./JOB/auth:/data/Software/mydan/etc/agent/auth"
+      #- "./JOB/logs:/data/logs"
+      #- "./JOB/glusterfs:/data/glusterfs"
+      - "../../../open-c3-data/auth:/data/Software/mydan/etc/agent/auth"
+      - "../../../open-c3-data/logs:/data/logs"
+#      - "../../../open-c3-data/glusterfs:/data/glusterfs"
+      - "../../../open-c3-data:/data/open-c3-data"
+      - "/bin/docker:/bin/docker"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     depends_on:
       - openc3-mysql
     networks:
@@ -76,7 +76,7 @@ services:
 #    ports:
 #      - "8080:3000"
     volumes:
-      - "/data/open-c3-data/grafana-data:/var/lib/grafana"
+      - "../../../open-c3-data/grafana-data:/var/lib/grafana"
     networks:
       JobNet:
         aliases:
@@ -92,7 +92,7 @@ services:
 #    ports:
 #      - "13000:3000"
     volumes:
-      - "/data/open-c3-data/grafana-data-fresh:/var/lib/grafana"
+      - "../../../open-c3-data/grafana-data-fresh:/var/lib/grafana"
     networks:
       JobNet:
         aliases:
@@ -107,13 +107,13 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - "/data/open-c3-data/prometheus-data:/data/prometheus-data"
-      - "/data/open-c3/prometheus:/data/prometheus-root"
+      - "../../../open-c3-data/prometheus-data:/data/prometheus-data"
+      - "../../../open-c3/prometheus:/data/prometheus-root"
     command:
       - '--config.file=/data/prometheus-root/config/prometheus.yml'
       - '--storage.tsdb.path=/data/prometheus-data'
       - '--web.enable-lifecycle'
-      - '--storage.tsdb.retention=14d'
+      - '--storage.tsdb.retention.time=14d'
     #  - '--log.level=debug'
     networks:
       JobNet:
@@ -129,7 +129,7 @@ services:
 #    ports:
 #      - "9093:9093"
     volumes:
-      - "/data/open-c3/alertmanager/config:/etc/alertmanager"
+      - "../../../open-c3/alertmanager/config:/etc/alertmanager"
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
@@ -147,11 +147,11 @@ services:
     restart: always
     entrypoint: /entrypoint.sh
     volumes:
-      - "/data/open-c3/lua/config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf.tpl"
-      - "/data/open-c3/lua/config/lua:/usr/local/openresty/nginx/conf/lua"
-      - "/data/open-c3-data/logs/lua:/usr/local/openresty/nginx/logs"
-      - "/data/open-c3/lua/bin/entrypoint.sh:/entrypoint.sh"
-      - "/data/open-c3/lua/lualib:/lualib"
+      - "../../../open-c3/lua/config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf.tpl"
+      - "../../../open-c3/lua/config/lua:/usr/local/openresty/nginx/conf/lua"
+      - "../../../open-c3-data/logs/lua:/usr/local/openresty/nginx/logs"
+      - "../../../open-c3/lua/bin/entrypoint.sh:/entrypoint.sh"
+      - "../../../open-c3/lua/lualib:/lualib"
     networks:
       JobNet:
         aliases:

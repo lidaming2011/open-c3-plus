@@ -2,10 +2,11 @@
 set -e
 
 C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+. $C3BASEPATH/open-c3/Installer/scripts/multi-os-support.sh
 
 cd $C3BASEPATH/open-c3/Installer/C3/pkg || exit 1
 
-cat module|xargs -i{} bash -c "./extract-module.sh {} || exit 255"
+cat module|c3xargs bash -c "./extract-module.sh {} || exit 255"
 
 # unzip
 cd $C3BASEPATH/open-c3/Connector/pkg || exit 1

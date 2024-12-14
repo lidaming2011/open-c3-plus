@@ -4,6 +4,58 @@ C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" ||
 
 BASE_PATH=$C3BASEPATH/open-c3
 
+###
+shopt -s expand_aliases
+
+CurrOS=Unknown
+unameOutput=$(uname -s)
+case "${unameOutput}" in
+    Linux*)
+        if grep -q 'CentOS' /etc/os-release; then
+            CurrOS=CentOS
+        elif grep -q 'Ubuntu' /etc/os-release; then
+            CurrOS=Ubuntu
+        elif grep -q 'Deepin' /etc/os-release; then
+            CurrOS=Deepin
+        fi
+        ;;
+    Darwin*)
+        CurrOS=macOS
+        ;;
+    *)
+        CurrOS=Unknown
+        ;;
+esac
+
+echo CurrOS: $CurrOS
+
+test $CurrOS == "Unknown" && exit 1
+
+if [ "$CurrOS" == "macOS" ]; then
+    alias c3sed='sed -i ""'
+    alias c3xargs='xargs -I{}'
+    alias c3pkginstall='brew'
+
+    alias c3-docker-compose="docker-compose"
+    C3BASEPATH=$HOME/open-c3-workspace
+
+elif [ "$CurrOS" == "CentOS" ]; then
+    alias c3sed='sed -i'
+    alias c3xargs='xargs -i{}'
+    alias c3pkginstall='yum'
+
+    alias c3-docker-compose="$C3BASEPATH/open-c3/Installer/docker-compose"
+
+else
+    alias c3sed='sed -i'
+    alias c3xargs='xargs -i{}'
+    alias c3pkginstall='apt-get'
+
+    alias c3-docker-compose="$C3BASEPATH/open-c3/Installer/docker-compose"
+fi
+
+###
+
 if [ "X$OPENC3VERSION" == "X" ]; then
     OPENC3VERSION=v2.2.0
 fi
@@ -21,7 +73,7 @@ function install() {
     echo =================================================================
     echo "[INFO]install git ..."
 
-    git --help 1>/dev/null 2>&1 || yum install git -y
+    git --help 1>/dev/null 2>&1 || c3pkginstall install git -y
     git --help 1>/dev/null 2>&1
     if [ $? = 0 ]; then
         echo "[SUCC]git installed."
@@ -30,37 +82,42 @@ function install() {
         exit 1
     fi
 
-    echo =================================================================
-    echo "[INFO]install docker ..."
 
-    docker --help 1>/dev/null 2>&1 || curl -fsSL $DOCKERINSTALL | bash
-    docker --help 1>/dev/null 2>&1
-    if [ $? = 0 ]; then
-        echo "[SUCC]docker installed."
-    else
-        echo "[FAIL]install docker fail."
-        exit 1
-    fi
+    if [[ $CurrOS == "CentOS" || $CurrOS == "Ubuntu" || $CurrOS == "Deepin" ]]; then
 
-    echo =================================================================
-    echo "[INFO]start docker ..."
-    docker ps 1>/dev/null 2>&1 || service docker start
-    docker ps 1>/dev/null 2>&1
-    if [ $? = 0 ]; then
-        echo "[SUCC]docker is started."
-    else
-        echo "[FAIL]start docker fail."
-        exit 1
-    fi
+        echo =================================================================
+        echo "[INFO]install docker ..."
 
-    echo =================================================================
-    echo "[INFO]enable docker.service ..."
-    systemctl enable docker.service
-    if [ $? = 0 ]; then
-        echo "[SUCC]enable docker.service success."
-    else
-        echo "[FAIL]enable docker.service fail."
-        exit 1
+        docker --help 1>/dev/null 2>&1 || curl -fsSL $DOCKERINSTALL | bash
+        docker --help 1>/dev/null 2>&1
+        if [ $? = 0 ]; then
+            echo "[SUCC]docker installed."
+        else
+            echo "[FAIL]install docker fail."
+            exit 1
+        fi
+
+        echo =================================================================
+        echo "[INFO]start docker ..."
+        docker ps 1>/dev/null 2>&1 || service docker start
+        docker ps 1>/dev/null 2>&1
+        if [ $? = 0 ]; then
+            echo "[SUCC]docker is started."
+        else
+            echo "[FAIL]start docker fail."
+            exit 1
+        fi
+
+        echo =================================================================
+        echo "[INFO]enable docker.service ..."
+        systemctl enable docker.service
+        if [ $? = 0 ]; then
+            echo "[SUCC]enable docker.service success."
+        else
+            echo "[FAIL]enable docker.service fail."
+            exit 1
+        fi
+
     fi
 
     echo =================================================================
@@ -309,7 +366,7 @@ function install() {
     echo "[INFO]copy trouble-ticketing ..."
 
     COOKIEKEY=$(cat $C3BASEPATH/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
-    sed -i "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/cfg.json
+    c3sed "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/cfg.json
 
     cp $C3BASEPATH/open-c3/Connector/pkg/trouble-ticketing $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$
     mv $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$ $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
@@ -397,7 +454,7 @@ function start() {
     rsync -av $C3BASEPATH/open-c3/Installer/install-cache/lualib/ $C3BASEPATH/open-c3/lua/lualib/
 #
 
-    cd $BASE_PATH/Installer/C3/ && ../docker-compose -f $DCF up -d --build
+    cd $BASE_PATH/Installer/C3/ && c3-docker-compose -f $DCF up -d --build
 
 #grafana
 
@@ -414,8 +471,8 @@ function start() {
     #OPENC3 TODO 这里ip替换域名是lua解析容器中的域名失败
 #    REIP=$(docker exec -it openc3-lua ping -c 1 OPENC3_SERVER_IP|grep openc3-server.c3_JobNet|awk -F '[()]' '{print $2}'|grep ^[0-9\.]*$|tail -n 1 )
     COOKIEKEY=$(cat $C3BASEPATH/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
-#    sed -i "s/OPENC3_SERVER_IP/$REIP/" $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
-    sed -i "s/ngx.var.cookie_sid/ngx.var.cookie_$COOKIEKEY/g" $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
+#    c3sed "s/OPENC3_SERVER_IP/$REIP/" $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
+    c3sed "s/ngx.var.cookie_sid/ngx.var.cookie_$COOKIEKEY/g" $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua
 
     cp $C3BASEPATH/open-c3/lua/config/lua/sso.temp.lua $C3BASEPATH/open-c3/lua/config/lua/sso.lua
 
@@ -428,7 +485,7 @@ function stop() {
     echo =================================================================
     echo "[INFO]stop ..."
 
-    cd $BASE_PATH/Installer/C3/ && ../docker-compose kill
+    cd $BASE_PATH/Installer/C3/ && c3-docker-compose kill
 
     echo "[SUCC]stoped."
 }
