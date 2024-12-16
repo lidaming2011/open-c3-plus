@@ -1,11 +1,13 @@
 #!/bin/bash
 set -e
 
-cd /data/open-c3/Installer/C3/pkg/jumpserver || exit
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
 
-bash -c "cd /data/open-c3/Connector/bl/sync/jumpserver && ./build.sh"
+cd $C3BASEPATH/open-c3/Installer/C3/pkg/jumpserver || exit
+
+bash -c "cd $C3BASEPATH/open-c3/Connector/bl/sync/jumpserver && ./build.sh"
 
 mkdir -p _tempdata/open-c3/Connector/bl/sync/jumpserver
-cp /data/open-c3/Connector/bl/sync/jumpserver/jumpserver _tempdata/open-c3/Connector/bl/sync/jumpserver/
+cp $C3BASEPATH/open-c3/Connector/bl/sync/jumpserver/jumpserver _tempdata/open-c3/Connector/bl/sync/jumpserver/
 chmod +x _tempdata/open-c3/Connector/bl/sync/jumpserver/jumpserver
 mv _tempdata tempdata

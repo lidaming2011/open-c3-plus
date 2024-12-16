@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 VERSION=$1
 if [ "X$VERSION" == "X" ];then
     VERSION=$(cat temp/.version)-$(date +%Y%m%d)
@@ -11,6 +13,6 @@ docker build . -t openc3/cloudeye-exporter:$VERSION --no-cache
 docker ps|grep 0.0.0.0:8087|awk '{print $1}'| xargs -i{} docker kill {}
 
 docker run -it -p 8087:8087 \
-  -v /data/open-c3/AGENT/cloudmon/exporter/cloudeye-exporter/metric:/metric \
-  -v /data/open-c3/Installer/C3/cloudeye-exporter/clouds.yml:/clouds.yml \
+  -v $C3BASEPATH/open-c3/AGENT/cloudmon/exporter/cloudeye-exporter/metric:/metric \
+  -v $C3BASEPATH/open-c3/Installer/C3/cloudeye-exporter/clouds.yml:/clouds.yml \
   openc3/cloudeye-exporter:$VERSION

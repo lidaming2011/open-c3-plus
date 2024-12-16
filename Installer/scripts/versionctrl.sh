@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BASE_PATH=/data/open-c3
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
+BASE_PATH=$C3BASEPATH/open-c3
 cd $BASE_PATH || exit 1
 
 function list() {

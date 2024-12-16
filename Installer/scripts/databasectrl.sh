@@ -1,10 +1,12 @@
 #!/bin/bash
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 if [ "X$OpenC3_Backup_ContainersName" == "X" ]; then
     OpenC3_Backup_ContainersName=openc3-mysql
 fi
 
-BASE_PATH=/data/open-c3-data/backup/mysql
+BASE_PATH=$C3BASEPATH/open-c3-data/backup/mysql
 mkdir -p $BASE_PATH
 cd $BASE_PATH || exit 1
 

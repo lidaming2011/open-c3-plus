@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 TOOLPATH=$(cd `dirname $0`; pwd)
 
 function backup() {
@@ -9,14 +11,14 @@ function backup() {
 
     $TOOLPATH/databasectrl.sh backup backup
 
-    cd /data && tar -zcvf open-c3-data.tar.gz open-c3-data --exclude open-c3-data/mysql-data
+    cd $C3BASEPATH && tar -zcvf open-c3-data.tar.gz open-c3-data --exclude open-c3-data/mysql-data
     echo "[SUCC]backup done."
 }
 
 function recovery() {
     echo =================================================================
     echo "[INFO]recovery ..."
-    cd /data && tar -zxvf open-c3-data.tar.gz
+    cd $C3BASEPATH && tar -zxvf open-c3-data.tar.gz
 
     $TOOLPATH/databasectrl.sh recovery backup
 

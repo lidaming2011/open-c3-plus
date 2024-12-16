@@ -1,5 +1,7 @@
 #!/bin/bash
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 # 制作AWS AMI时可以执行这个脚本清理文件
 
 if [ "X$1" != "Xforce" ] ;then
@@ -8,9 +10,9 @@ if [ "X$1" != "Xforce" ] ;then
 fi
 
 
-/data/open-c3/upgrade.sh
+$C3BASEPATH/open-c3/upgrade.sh
 
-sudo touch /data/open-c3-data/lotus/ooze
+sudo touch $C3BASEPATH/open-c3-data/lotus/ooze
 
 sudo passwd -l root
 sudo shred -u /etc/ssh/*_key /etc/ssh/*_key.pub

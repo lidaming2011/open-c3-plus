@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 VERSION=$1
 
 if [ "X$VERSION" == "X" ];then
@@ -8,6 +10,6 @@ if [ "X$VERSION" == "X" ];then
 fi
 echo VERSION:$VERSION
 
-cd /data/open-c3/Installer/C3/pkg || exit
+cd $C3BASEPATH/open-c3/Installer/C3/pkg || exit
 
 cat module|grep -v '^#'|xargs -i{} bash -c "./build-module.sh {} $VERSION || exit 255"

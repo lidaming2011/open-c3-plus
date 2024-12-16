@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BASE_PATH=/data/open-c3
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
+BASE_PATH=$C3BASEPATH/open-c3
 
 GITADDR=http://github.com
 DOCKERINSTALL=https://get.docker.com
@@ -15,7 +17,7 @@ function start() {
     echo =================================================================
     echo "[INFO]get open-c3 ..."
     if [ ! -d $BASE_PATH ]; then
-        cd /data && git clone $GITADDR/open-c3/open-c3
+        cd $C3BASEPATH && git clone $GITADDR/open-c3/open-c3
     fi
 
     if [ -d "$BASE_PATH" ]; then
@@ -95,8 +97,8 @@ function start() {
         echo =================================================================
         echo "[INFO]build ..."
 
-        docker run --rm -i -v /data/open-c3/approve-front/:/code openc3/gulp bower install --allow-root
-        docker run --rm -i -v /data/open-c3/approve-front/:/code openc3/gulp gulp build
+        docker run --rm -i -v $C3BASEPATH/open-c3/approve-front/:/code openc3/gulp bower install --allow-root
+        docker run --rm -i -v $C3BASEPATH/open-c3/approve-front/:/code openc3/gulp gulp build
         
         rsync -av $BASE_PATH/approve-front/src/assets/ $BASE_PATH/approve-front/dist/assets/
 
@@ -106,7 +108,7 @@ function start() {
     echo =================================================================
     echo "[INFO]start web ..."
 
-    docker run -itd -v /data/open-c3/approve-front/:/code  -p 3001:3000 --name open-c3-approve-dev --add-host=open-c3.org:$IP openc3/gulp gulp serve
+    docker run -itd -v $C3BASEPATH/open-c3/approve-front/:/code  -p 3001:3000 --name open-c3-approve-dev --add-host=open-c3.org:$IP openc3/gulp gulp serve
     if [ $? = 0 ]; then
         echo "[SUCC]start web success."
     else

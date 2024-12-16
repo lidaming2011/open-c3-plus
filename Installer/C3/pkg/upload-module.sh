@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 MODULE=$1
 
 if [ "X$MODULE" == "X" ];then
@@ -14,7 +17,7 @@ if [ "X$VERSION" == "X" ];then
     exit 1
 fi
 
-cd /data/open-c3/Installer/C3/pkg || exit 1
+cd $C3BASEPATH/open-c3/Installer/C3/pkg || exit 1
 
 docker push openc3/pkg-$MODULE:$VERSION
 

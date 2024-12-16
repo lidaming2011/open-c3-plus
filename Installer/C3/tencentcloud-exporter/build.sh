@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 VERSION=$1
 if [ "X$VERSION" == "X" ];then
     VERSION=$(date +%Y%m%d)
@@ -14,5 +16,5 @@ docker build . -t openc3/tencentcloud-exporter:$VERSION --no-cache
 docker ps|grep 0.0.0.0:9123|awk '{print $1}'| xargs -i{} docker kill {}
 
 docker run -it -p 9123:9123 \
-  -v /data/open-c3/Installer/C3/tencentcloud-exporter/qcloud.yml:/qcloud.yml \
+  -v $C3BASEPATH/open-c3/Installer/C3/tencentcloud-exporter/qcloud.yml:/qcloud.yml \
   openc3/tencentcloud-exporter:$VERSION
