@@ -161,3 +161,4 @@ Connector/pp/device/synctags/ProductOwner.yml
 Connector/pp/k8s-manage/getK8sHealth/c3mc-service-analysis-get-k8s-health
 prometheus/config/targets/
 Connector/pp/mmon/http-monitor/*.txt
+c3-front/dist-app
