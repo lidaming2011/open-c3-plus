@@ -101,6 +101,7 @@ function start() {
         docker run --rm -i -v $C3BASEPATH/open-c3/approve-front/:/code openc3/gulp gulp build
         
         rsync -av $BASE_PATH/approve-front/src/assets/ $BASE_PATH/approve-front/dist/assets/
+        rsync -av $BASE_PATH/approve-front/dist/       $BASE_PATH/c3-front/dist-app/
 
         exit
     fi
