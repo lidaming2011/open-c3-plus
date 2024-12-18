@@ -22,9 +22,13 @@
         $scope.formType = 'ip';
         vm.customstr = "";
         $scope.groupHide = false;
+        $scope.ipHide = false;
         var ss = window.location.href;
         if(ss.split("#")[1].indexOf("/quickentry/terminal") !=-1){
             $scope.groupHide = true;
+            $scope.ipHide = true;
+
+            $scope.formType = 'custom';
         }else if(ss.split("#")[1].indexOf("creaetjob") !=-1){
             $scope.variableShow = true;
         }else if(ss.split("#")[1].indexOf("editjob") !=-1){

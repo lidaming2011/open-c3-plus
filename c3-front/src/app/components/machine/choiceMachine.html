@@ -6,7 +6,7 @@
         <div style="height: 40px;border-bottom: 1px solid #ddd;">
             <div class="admin-form">
                 <div class="option-group field" >
-                    <label class="option option-primary">
+                    <label ng-hide="ipHide" class="option option-primary">
                         <input type="radio" ng-model="formType" value="ip" ng-click="choice.cleanSelected()">
                         <span class="radio" style="padding-top: 0;min-height: 0"></span>{{'C3T.通过IP选择服务器'|translate}}
                     </label>
