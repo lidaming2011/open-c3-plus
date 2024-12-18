@@ -155,6 +155,29 @@
 
         };
 
+        vm.choiceServer = function () {
+            var openChoice = $uibModal.open({
+                templateUrl: 'app/components/machine/choiceMachine.html',
+                controller: 'ChoiceController',
+                controllerAs: 'choice',
+                backdrop: 'static',
+                size: 'lg',
+                keyboard: false,
+                bindToController: true,
+                resolve: {
+                    treeId: function () { return vm.treeid},
+
+                }
+            });
+            openChoice.result.then(
+                function (result) {
+                    $scope.selectedData = result;
+                },function (reason) {
+                    console.log("error reason", reason)
+                }
+            );
+        };
+
         vm.openTailLog = function () {
             if($scope.selectedData.length<=0){
                 swal({

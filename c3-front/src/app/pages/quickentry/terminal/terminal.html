@@ -31,6 +31,7 @@
         <div class="panel-body">
 
             <div style="float: left;width: 60%;">
+		<button class="btn btn-primary" ng-click="templatecmd.choiceServer()" required >{{'C3T.通过手写IP选择服务器'|translate}}</button>
                 <table ng-table="templatecmd.machine_Table" class="table table-hover text-center table-condensed" show-filter="true" style="border: 1px solid #ddd;">
                     
                         <tr ng-repeat="ss in $data" style="text-align: left">
