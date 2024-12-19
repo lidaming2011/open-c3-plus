@@ -1,6 +1,8 @@
 #!/bin/bash
 
-docker ps -a|awk '{print $1}'|grep -v CONTAINER|xargs  -i{} docker update --cpus=2 {}
+. ./Installer/scripts/multi-os-support.sh
+
+docker ps -a|awk '{print $1}'|grep -v CONTAINER|c3xargs docker update --cpus=2 {}
 
 docker update -c 4000  openc3-server
 docker update -c 4000  openc3-mysql
