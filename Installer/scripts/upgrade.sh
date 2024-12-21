@@ -1,6 +1,7 @@
 #!/bin/bash
 
 C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+. $C3BASEPATH/open-c3/Installer/scripts/multi-os-support.sh
 
 BASE_PATH=$C3BASEPATH/open-c3
 cd $BASE_PATH || exit 1
@@ -133,7 +134,7 @@ function upgradeSelf() {
     echo "[INFO]copy trouble-ticketing ..."
 
     COOKIEKEY=$(cat $C3BASEPATH/open-c3/Connector/config.inix | grep -v '^ *#' | grep cookiekey:|awk '{print $2}'|grep ^[a-zA-Z0-9]*$)
-    sed -i "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/cfg.json
+    c3sed "s/\"cookiekey\":\".*\"/\"cookiekey\":\"$COOKIEKEY\"/g" $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/cfg.json
 
     cp $C3BASEPATH/open-c3/Connector/pkg/trouble-ticketing $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$
     mv $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing.$$ $C3BASEPATH/open-c3/Connector/tt/trouble-ticketing/trouble-ticketing
@@ -148,7 +149,7 @@ function upgradeSelf() {
 
     echo =================================================================
     echo "[INFO]golang build ..."
-    find $C3BASEPATH/open-c3/Connector/pp -name golang-build.sh|sed "s/\/golang-build.sh$//"|xargs -i{} bash -c "echo golang build {} && cd {} && ./golang-build.sh"
+    find $C3BASEPATH/open-c3/Connector/pp -name golang-build.sh|sed "s/\/golang-build.sh$//"|c3xargs bash -c "echo golang build {} && cd {} && ./golang-build.sh"
 
     if [ $? = 0 ]; then
         echo "[SUCC]golang build success."
