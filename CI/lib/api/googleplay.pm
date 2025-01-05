@@ -9,6 +9,19 @@ use api;
 use Format;
 use uuid;
 
+my %key;
+BEGIN{
+    my $f = '/data/open-c3-data/to3part.yml';
+    if( -f $f )
+    {
+        my $c = eval{ YAML::XS::LoadFile $f };
+        warn "load $f err: $@" if $@;
+        %key = %$c if $c && ref $c eq 'HASH';
+    }
+
+    $key{jobx} = $ENV{OPEN_C3_RANDOM} if $ENV{OPEN_C3_RANDOM};
+};
+
 =pod
 
 googleplay/获取包列表
@@ -16,8 +29,7 @@ googleplay/获取包列表
 =cut
 
 get '/googleplay/review/app_package_name' => sub {
-    my $param = params();
-#    my $pmscheck = api::pmscheck( 'openc3_ci_read', $param->{groupid} ); return $pmscheck if $pmscheck;
+    my $pmscheck = api::pmscheck( 'openc3_job_read', 0 ); return $pmscheck if $pmscheck;
 
     my $r = eval{ 
         $api::mysql->query( "SELECT DISTINCT app_package_name FROM openc3_ci_googleplay_review" )};
@@ -40,9 +52,7 @@ get '/googleplay/review' => sub {
 
     return  +{ stat => $JSON::false, info => "check format fail $error" } if $error;
 
-
-    my $param = params();
-#    my $pmscheck = api::pmscheck( 'openc3_ci_read', $param->{groupid} ); return $pmscheck if $pmscheck;
+    my $pmscheck = api::pmscheck( 'openc3_job_read', 0 ); return $pmscheck if $pmscheck;
 
     my @col = qw( review_id device_name comment_time_seconds thumbs_up_count thumbs_down_count reviewer_language app_version_code app_version_name android_os_version star_rating user_comment developer_comment author_name package_name app_package_name callback );
     my $where = $param->{appname} ? "where app_package_name='$param->{appname}'" : "";
@@ -68,15 +78,19 @@ googleplay/评论上报
 =cut
 
 post '/googleplay/review/record' => sub {
-    my $param = params();
-
     my @col = qw( review_id device_name comment_time_seconds thumbs_up_count thumbs_down_count reviewer_language app_version_code app_version_name android_os_version star_rating user_comment developer_comment author_name package_name app_package_name callback );
+
+    my $param = params();
     my $error = Format->new( 
         map{ ( $_  => [ 'mismatch', qr/'/ ], 1, ) }grep{ !( $_ eq 'user_comment' || $_ eq 'developer_comment' ) }@col
     )->check( %$param );
-
     return  +{ stat => $JSON::false, info => "check format fail $error" } if $error;
-#    my $pmscheck = api::pmscheck( 'openc3_ci_control', $param->{groupid} ); return $pmscheck if $pmscheck;
+
+    my ( $appkey, $appname ) = map{ request->headers->{$_} }qw( appkey appname );
+    $appname = $param->{appname} if ( ! $appname ) && $param->{appname};
+    $appkey  = $param->{appkey } if ( ! $appkey  ) && $param->{appkey };
+
+    return  +{ stat => $JSON::false, info => "key err", code => 1, msg => "key err" } unless $appkey && $appname && $key{$appname} && $key{$appname} eq $appkey;
 
     my $projectid = $param->{projectid};
     my $user = $api::sso->run( cookie => cookie( $api::cookiekey ), 
