@@ -1,0 +1,143 @@
+<cmloading ng-if="!googleplayreview.loadover"></cmloading>
+<div class="row block" >
+
+<div>
+  <div style="position: fixed; top: 80px; right: 10px; display: flex; flex-direction: column; align-items: flex-end; z-index: 9999;">
+    <button ng-click="googleplayreview.debugswitch()" style="width: 50px; height: 50px; border-radius: 50%; background-color: #FF6633; color: white;">debug</button>
+</div> 
+  <div class="admin-form row filter-switch">
+    <div class="filter-switch-items">
+    </div>
+
+    <div class="filter-switch-items">
+      <div class="filter-switch-items-label control-label fwbold">{{'C3T.包名'|translate}}：</div>
+      <div class="filter-switch-items-context">
+        <ui-select class="" ng-model="googleplayreview.alarmLevel" placeholder="{{'C3T.报名'|translate}}" ng-change="googleplayreview.handleAlarmChange($select.selected.value)">
+          <ui-select-match placeholder="{{'C3T.告警级别'| translate}}"><span class="item-label">{{$select.selected.label| translate}}</span></ui-select-match>
+          <ui-select-choices repeat="item.value as item in googleplayreview.levelOption | filter: $select.search"><div ng-bind-html="item.label | highlight: $select.search"></div></ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+ 
+    
+    <div class="filter-switch-items">
+      <div class="filter-switch-items-label control-label fwbold">{{'C3T.定时刷新'| translate}}：</div>
+      <div class="filter-switch-items-context">
+        <button class="btn btn-success interval-button-style" ng-disabled="googleplayreview.isInterval" uib-tooltip="{{'C3T.开启定时刷新'|translate}}" ng-click="googleplayreview.handleOpenChange('open')">{{'C3T.开启'| translate}}</button>
+        <button class="btn btn-danger interval-button-style" ng-disabled="!googleplayreview.isInterval" uib-tooltip="{{'C3T.暂定定时刷新'|translate}}" ng-click="googleplayreview.handleOpenChange('close')">{{'C3T.暂停'| translate}}</button>
+      </div>
+    </div>
+  </div>
+
+    <div class="panel panel-primary">
+
+        <div class="panel-heading">
+            <span class="panel-controls">
+                <button class="btn btn-primary refresh-style" uib-tooltip="{{'C3T.刷新'|translate}}" ng-click="googleplayreview.reload()" ><i class="fa fa-refresh fa-fw" ng-class="{'fa-spin':!googleplayreview.loadAover || !googleplayreview.loadBover || !googleplayreview.loadCover}" ></i></button>
+            </span>
+	    <h5>{{'C3T.评论管理'|translate}} </h5>
+
+        </div>
+
+        <div class="panel-body">
+            <div class="panel-tabs" style="overflow-x: auto;">
+                <table ng-table="googleplayreview.dataTable" class="table table-hover text-center table-condensed" show-filter="true">
+                    <tr ng-repeat="m in $data" ng-class="{'first-almost': m.labels.severity === 'level1','second-almost': m.labels.severity === 'level2','third-almost': m.labels.severity === 'level3','forth-almost': m.labels.severity === 'level4'}">
+                        <td header="'headerCheckbox.html'" data-title="">
+                          <input type="checkbox" name="selected" ng-model="googleplayreview.checkboxes.items[m.uuid]" />
+                        </td>  
+                        <td data-title="'review_id'"  filter="{review_id: 'text'}" ng-if="googleplayreview.hasDebugStatus">{{m.review_id}}</td>  
+                        <td data-title="'C3T.回调'|translate"  filter="{callback: 'text'}" ng-if="googleplayreview.hasDebugStatus">{{m.callback}}</td>  
+                        <td data-title="'C3T.包全名'|translate" data-sortable="'app_package_name'" filter="{app_package_name: 'text'}">{{m.app_package_name}}</td>
+                        <td data-title="'C3T.包名'|translate" data-sortable="'package_name'" filter="{package_name: 'text'}">{{m.package_name}}</td>
+                        <td data-title="'C3T.设备名称'|translate" data-sortable="'device_name'" filter="{device_name: 'text'}">{{m.device_name}}</td>
+                        <td data-title="'C3T.评论时间'|translate" data-sortable="'comment_time_seconds'" filter="{comment_time_seconds: 'text'}">{{m.comment_time_seconds}}</td>
+                        <td data-title="'C3T.同步数据'|translate" data-sortable="'create_time'" filter="{create_time: 'text'}">{{m.create_time}}</td>
+                        <td data-title="'C3T.赞'|translate" data-sortable="'thumbs_up_count'" filter="{thumbs_up_count: 'text'}">{{m.thumbs_up_count}}</td>
+                        <td data-title="'C3T.踩'|translate" data-sortable="'thumbs_down_count'" filter="{thumbs_down_count: 'text'}">{{m.thumbs_down_count}}</td>
+                        <td data-title="'C3T.APP版本号'|translate" data-sortable="'app_version_code'" filter="{app_version_code: 'text'}">{{m.app_version_code}}</td>
+                        <td data-title="'C3T.APP版本名'|translate" data-sortable="'app_version_name'" filter="{app_version_name: 'text'}">{{m.app_version_name}}</td>
+                        <td data-title="'C3T.安卓系统'|translate" data-sortable="'android_os_version'" filter="{android_os_version: 'text'}">{{m.android_os_version}}</td>
+                        <td data-title="'C3T.星'|translate" data-sortable="'star_rating'" filter="{star_rating: 'text'}">{{m.star_rating}}</td>
+                        <td data-title="'C3T.作者'|translate" data-sortable="'author_name'" filter="{author_name: 'text'}">{{m.author_name}}</td>
+                        <td data-title="'C3T.评论'|translate" data-sortable="'user_comment'" filter="{user_comment: 'text'}">{{m.user_comment}}</td>
+                        <td data-title="'C3T.回复'|translate" data-sortable="'developer_comment'" filter="{developer_comment: 'text'}">{{m.developer_comment}}</td>
+ 
+                        <td class="textcenter"  data-title="'C3T.操作'|translate" width="20">
+                           <button class="btn btn-primary btn-sm" ng-click="googleplayreview.reply(m)">{{'C3T.回复'|translate}}</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="headerCheckbox.html">
+  <input type="checkbox" ng-model="googleplayreview.checkboxes.checked"  class="select-all"/>
+</script>
+
+</div>
+
+<style>
+  .filter-switch {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 15px;
+    flex:1
+  }
+
+  .filter-switch-items {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-right: 20px;
+  }
+
+  .filter-switch-items-label {
+    margin-right: 5px;
+  }
+
+  .filter-switch-items-context {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filter-switch-items-context-label {
+    margin-bottom: 0!important;
+  }
+
+  .first-almost {
+    background-color: #f5a2a2!important;
+  }
+
+  .second-almost {
+    background-color: #ebcccc!important;
+  }
+
+  .third-almost {
+    background-color: #faf2cc!important;
+  }
+
+  .forth-almost {
+    background-color: #d9edf7!important;
+  }
+
+  .interval-button-style {
+    margin:0 10px!important;
+  }
+
+  .device-export {
+    text-align: right;
+    background-color: transparent;
+    line-height: normal;
+    border-color: transparent;
+    padding: 12px;
+  }
+  .refresh-style {
+    margin-top: -10px;
+    padding-bottom: 3px;
+  }
+</style>
