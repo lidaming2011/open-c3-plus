@@ -11,18 +11,44 @@ use uuid;
 
 =pod
 
+googleplay/获取包列表
+
+=cut
+
+get '/googleplay/review/app_package_name' => sub {
+    my $param = params();
+#    my $pmscheck = api::pmscheck( 'openc3_ci_read', $param->{groupid} ); return $pmscheck if $pmscheck;
+
+    my $r = eval{ 
+        $api::mysql->query( "SELECT DISTINCT app_package_name FROM openc3_ci_googleplay_review" )};
+
+    return $@ ? +{ stat => $JSON::false, info => $@ } : +{ stat => $JSON::true, data => [ map{ +{ label => $_, value => $_ } }map{@$_ }@$r] };
+};
+
+
+=pod
+
 googleplay/获取评论列表
 
 =cut
 
 get '/googleplay/review' => sub {
     my $param = params();
+    my $error = Format->new(
+        appname => qr/^[\.a-zA-Z0-9\-_]*$/, 0,
+    )->check( %$param );
+
+    return  +{ stat => $JSON::false, info => "check format fail $error" } if $error;
+
+
+    my $param = params();
 #    my $pmscheck = api::pmscheck( 'openc3_ci_read', $param->{groupid} ); return $pmscheck if $pmscheck;
 
     my @col = qw( review_id device_name comment_time_seconds thumbs_up_count thumbs_down_count reviewer_language app_version_code app_version_name android_os_version star_rating user_comment developer_comment author_name package_name app_package_name callback );
+    my $where = $param->{appname} ? "where app_package_name='$param->{appname}'" : "";
     my $r = eval{ 
         $api::mysql->query( 
-            sprintf( "select %s from openc3_ci_googleplay_review", join( ',', @col)), \@col )};
+            sprintf( "select %s from openc3_ci_googleplay_review $where", join( ',', @col)), \@col )};
 
 
     for my $x ( @$r )

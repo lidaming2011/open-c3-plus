@@ -12,9 +12,9 @@
     <div class="filter-switch-items">
       <div class="filter-switch-items-label control-label fwbold">{{'C3T.包名'|translate}}：</div>
       <div class="filter-switch-items-context">
-        <ui-select class="" ng-model="googleplayreview.alarmLevel" placeholder="{{'C3T.报名'|translate}}" ng-change="googleplayreview.handleAlarmChange($select.selected.value)">
-          <ui-select-match placeholder="{{'C3T.告警级别'| translate}}"><span class="item-label">{{$select.selected.label| translate}}</span></ui-select-match>
-          <ui-select-choices repeat="item.value as item in googleplayreview.levelOption | filter: $select.search"><div ng-bind-html="item.label | highlight: $select.search"></div></ui-select-choices>
+        <ui-select class="" ng-model="googleplayreview.appselected" placeholder="{{'C3T.包名'|translate}}" ng-change="googleplayreview.handleChange($select.selected.value)">
+          <ui-select-match placeholder="{{'C3T.包名'| translate}}"><span class="item-label">{{$select.selected.label| translate}}</span></ui-select-match>
+          <ui-select-choices repeat="item.value as item in googleplayreview.applist | filter: $select.search"><div ng-bind-html="item.label | highlight: $select.search"></div></ui-select-choices>
         </ui-select>
       </div>
     </div>
@@ -33,9 +33,9 @@
 
         <div class="panel-heading">
             <span class="panel-controls">
-                <button class="btn btn-primary refresh-style" uib-tooltip="{{'C3T.刷新'|translate}}" ng-click="googleplayreview.reload()" ><i class="fa fa-refresh fa-fw" ng-class="{'fa-spin':!googleplayreview.loadAover || !googleplayreview.loadBover || !googleplayreview.loadCover}" ></i></button>
+                <button class="btn btn-primary refresh-style" uib-tooltip="{{'C3T.刷新'|translate}}" ng-click="googleplayreview.reload()" ><i class="fa fa-refresh fa-fw" ng-class="{'fa-spin':!googleplayreview.loadover || !googleplayreview.loadAppover }" ></i></button>
             </span>
-	    <h5>{{'C3T.评论管理'|translate}} </h5>
+	    <h5>{{'C3T.GooglePlay评论管理'|translate}} </h5>
 
         </div>
 
