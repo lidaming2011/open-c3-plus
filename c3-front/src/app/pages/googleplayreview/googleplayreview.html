@@ -43,9 +43,6 @@
             <div class="panel-tabs" style="overflow-x: auto;">
                 <table ng-table="googleplayreview.dataTable" class="table table-hover text-center table-condensed" show-filter="true">
                     <tr ng-repeat="m in $data" ng-class="{'first-almost': m.labels.severity === 'level1','second-almost': m.labels.severity === 'level2','third-almost': m.labels.severity === 'level3','forth-almost': m.labels.severity === 'level4'}">
-                        <td header="'headerCheckbox.html'" data-title="">
-                          <input type="checkbox" name="selected" ng-model="googleplayreview.checkboxes.items[m.uuid]" />
-                        </td>  
                         <td data-title="'review_id'"  filter="{review_id: 'text'}" ng-if="googleplayreview.hasDebugStatus">{{m.review_id}}</td>  
                         <td data-title="'C3T.回调'|translate"  filter="{callback: 'text'}" ng-if="googleplayreview.hasDebugStatus">{{m.callback}}</td>  
                         <td data-title="'C3T.包全名'|translate" data-sortable="'app_package_name'" filter="{app_package_name: 'text'}">{{m.app_package_name}}</td>
