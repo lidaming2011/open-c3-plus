@@ -55,7 +55,7 @@ get '/googleplay/review' => sub {
 
     my $pmscheck = api::pmscheck( 'openc3_job_read', 0 ); return $pmscheck if $pmscheck;
 
-    my @col = qw( review_id device_name comment_time_seconds thumbs_up_count thumbs_down_count reviewer_language app_version_code app_version_name android_os_version star_rating user_comment developer_comment author_name package_name app_package_name callback );
+    my @col = qw( review_id device_name comment_time_seconds thumbs_up_count thumbs_down_count reviewer_language app_version_code app_version_name android_os_version star_rating user_comment developer_comment author_name package_name app_package_name callback create_time );
     my $where = $param->{appname} ? "where app_package_name='$param->{appname}'" : "";
     my $r = eval{ 
         $api::mysql->query( 
