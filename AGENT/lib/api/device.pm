@@ -443,6 +443,15 @@ any '/device/detail/:type/:subtype/:treeid/:uuid' => sub {
             }
             push @x, [ _mysqlauth_ => $mysqlauth ];
 
+            if( $mysqladdr )
+            {
+                my ( $host, $port ) = split /:/, $mysqladdr;
+                my ( $user, $pass ) = $mysqlauth ? split( /:/, $mysqlauth ) : ( '', '' );
+                my $userx = $user ? "-u '$user'" : "";
+                my $passx = $pass ? "-p'$pass'" : "";
+                push @x, [ _cmd_ => "mysql -h '$host' -P '$port' $userx $passx" ];
+            }
+
         }
 
         if( $showredisauth )
@@ -464,6 +473,14 @@ any '/device/detail/:type/:subtype/:treeid/:uuid' => sub {
             }
             $redisauth =~ s/^_://;
             push @x, [ _redisauth_ => $redisauth ];
+
+            if( $redisaddr )
+            {
+                my ( $host, $port ) = split /:/, $redisaddr;
+                my $pass = $redisauth // '';
+                my $passx = $pass ? "-a '$pass'" : "";
+                push @x, [ _cmd_ => "redis-cli -h '$host' -p '$port' $passx" ];
+            }
         }
  
         if( $showmongodbauth )
@@ -484,6 +501,17 @@ any '/device/detail/:type/:subtype/:treeid/:uuid' => sub {
                 return  +{ stat => $JSON::false, info => "get mongodb auth fail: $@" } if $@;
             }
             push @x, [ _mongodbauth_ => $mongodbauth ];
+
+            if( $mongodbaddr )
+            {
+                my ( $host, $port ) = split /:/, $mongodbaddr;
+                my ( $user, $pass ) = $mongodbauth ? split( /:/, $mongodbauth ) : ( '', '' );
+                $pass ||= '';
+                my $userx = $user ? "--username '$user'" : "";
+                my $passx = $pass ? "--password '$pass'" : "";
+                push @x, [ _cmd_ => "mongo --host '$host' --port '$port' $userx '$passx' --authenticationDatabase admin --db myDatabase" ];
+            }
+
         }
 
         push @re2, \@x;
