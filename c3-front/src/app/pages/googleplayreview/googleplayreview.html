@@ -52,7 +52,7 @@
                         <td data-title="'C3T.包名'|translate" data-sortable="'package_name'" filter="{package_name: 'text'}">{{m.package_name}}</td>
                         <td data-title="'C3T.设备名称'|translate" data-sortable="'device_name'" filter="{device_name: 'text'}">{{m.device_name}}</td>
                         <td data-title="'C3T.评论时间'|translate" data-sortable="'comment_time'" filter="{comment_time: 'text'}">{{m.comment_time}}</td>
-                        <td data-title="'C3T.同步数据'|translate" data-sortable="'create_time'" filter="{create_time: 'text'}">{{m.create_time}}</td>
+                        <td data-title="'C3T.同步数据'|translate" data-sortable="'create_time'" filter="{create_time: 'text'}" ng-if="googleplayreview.hasDebugStatus" >{{m.create_time}}</td>
                         <td data-title="'C3T.赞'|translate" data-sortable="'thumbs_up_count'" filter="{thumbs_up_count: 'text'}">{{m.thumbs_up_count}}</td>
                         <td data-title="'C3T.踩'|translate" data-sortable="'thumbs_down_count'" filter="{thumbs_down_count: 'text'}">{{m.thumbs_down_count}}</td>
                         <td data-title="'C3T.APP版本号'|translate" data-sortable="'app_version_code'" filter="{app_version_code: 'text'}">{{m.app_version_code}}</td>
