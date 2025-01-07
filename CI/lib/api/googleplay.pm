@@ -8,6 +8,7 @@ use MIME::Base64;
 use api;
 use Format;
 use uuid;
+use DateTime;
 
 my %key;
 BEGIN{
@@ -63,6 +64,9 @@ get '/googleplay/review' => sub {
 
     for my $x ( @$r )
     {
+        my $dt = DateTime->from_epoch(epoch => $x->{comment_time_seconds}, time_zone => 'UTC');
+        $x->{comment_time} = $dt->strftime("%Y-%m-%d %H:%M:%S") . ' UTC';
+
         map{ 
             $x->{$_}  = Encode::decode("utf8", decode_base64( $x->{$_} ) ) if defined $x->{$_}
         }qw( user_comment developer_comment );
