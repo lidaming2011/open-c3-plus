@@ -31,7 +31,7 @@ return sub
         $data = +{ stat => 1, data => [] };
         my @x = `c3mc-device-nodeinfo-allnode-cache get`;
         chomp @x;
-        my $idx == 0;
+        my $idx = 0;
         for( @x )
         {
             $_ = Encode::decode( 'utf8', $_ );
