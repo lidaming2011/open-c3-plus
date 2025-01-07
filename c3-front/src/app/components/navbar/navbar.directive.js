@@ -250,6 +250,18 @@
                           { title: 'C3T.监控告警', label: '报告.监控告警', icon: 'fa fa-bell', params: {}, router: 'home.monreport' },
                         ]
                       },
+                      // 运营
+                      {
+                        title: 'C3T.运营',
+                        icon: '',
+                        label: '运营',
+                        router: '',
+                        params: {},
+                        list: [
+                          { title: 'C3T.GooglePlay评论管理', label: '运营.GooglePlay评论管理', icon: 'fa fa-wrench', params: {}, router: 'home.googleplayreview' },
+                        ]
+                      },
+ 
                     ]
                   },
                   {

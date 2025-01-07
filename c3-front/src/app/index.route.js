@@ -536,6 +536,12 @@
                 controller: 'AllalertsController',
                 controllerAs: 'allalerts'
             })
+            .state('home.googleplayreview', {
+                url: 'googleplayreview/:treeid',
+                templateUrl: 'app/pages/googleplayreview/googleplayreview.html',
+                controller: 'GooglePlayReviewController',
+                controllerAs: 'googleplayreview'
+            })
             .state('home.thirdparty', {
                 url: 'thirdparty/:treeid',
                 templateUrl: 'app/pages/thirdparty/thirdparty.html',

@@ -32,7 +32,7 @@ docker run -p 8080:88 openc3/allinone:latest
 ## 单机版
 
 ```
-# 在centos 7 的系统上执行下面命令(最小资源磁盘： 4核8G 100G磁盘 )，执行成功后通过80端口访问服务。
+# 在CentOS 7 【或者 Ubuntu、Deepin、macOS 】的系统上执行下面命令(最小资源磁盘： 4核8G 100G磁盘 )，执行成功后通过80端口访问服务。
 curl https://raw.githubusercontent.com/open-c3/open-c3/v2.6.1/Installer/scripts/single.sh | OPENC3VERSION=v2.6.1 bash -s install
 
 ```

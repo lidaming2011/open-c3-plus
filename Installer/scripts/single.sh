@@ -27,7 +27,7 @@ case "${unameOutput}" in
         ;;
 esac
 
-echo CurrOS: $CurrOS
+test "X$1" == "Xinstall" && echo CurrOS: $CurrOS
 
 test $CurrOS == "Unknown" && exit 1
 

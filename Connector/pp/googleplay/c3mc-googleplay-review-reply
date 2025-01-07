@@ -1,0 +1,49 @@
+#!/data/Software/mydan/perl/bin/perl -I/data/Software/mydan/CI/lib -I/data/Software/mydan/CI/private/lib
+use strict;
+use warnings;
+
+$|++;
+
+use YAML::XS;
+use JSON;
+use File::Temp;
+use Encode qw(encode);
+use LWP::UserAgent;
+use MYDB;
+use MIME::Base64;
+
+=head1 SYNOPSIS
+
+ cat param.yml| $0
+
+=cut
+
+local $/ = undef;
+my @p = YAML::XS::Load( my $x = <STDIN> );
+local $/ = "\n";
+
+my $param = $p[0];
+
+my $ua = LWP::UserAgent->new();
+$ua->agent('Mozilla/9 [en] (Centos; Linux)');
+$ua->timeout( 15 );
+
+my $cont = JSON::encode_json( +{ reviewId => $param->{review_id}, text => $param->{text} });
+
+my $res = $ua->post( "$param->{callback}/", Content => $cont, 'Content-Type' => 'application/json');
+
+my $err = sprintf "call fail:\n%s\n", YAML::XS::Dump $res;
+
+die sprintf( "$err: code %s", $res->code ) unless $res->is_success;
+my $v = eval{JSON::decode_json $res->decoded_content};
+die sprintf( "$err: data no JSON: $@" )if $@;
+
+die $err unless $v->{stat};
+
+my $developer_comment= encode_base64( encode('UTF-8', $param->{text} ) );
+
+my $review_id = $param->{review_id};
+my $db = MYDB->new( "/data/Software/mydan/CI/conf/conn", delayedconnection => 1 );
+eval{ $db->execute( "update openc3_ci_googleplay_review set developer_comment='$developer_comment' where review_id='$review_id'" ); };
+
+die "update db fail: $@" if $@;

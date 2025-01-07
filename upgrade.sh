@@ -1,14 +1,15 @@
 #!/bin/bash
-
 set -e
 
+C3BASEPATH=$( [[ "$(uname -s)" == Darwin ]] && echo "$HOME/open-c3-workspace" || echo "/data" )
+
 if [[ "X$1" == "Xforce" || "X$1" == "X-f" ]];then
-    /data/open-c3/open-c3.sh upgrade
+    $C3BASEPATH/open-c3/open-c3.sh upgrade
 else
-    /data/open-c3/open-c3.sh upgrade S
+    $C3BASEPATH/open-c3/open-c3.sh upgrade S
 fi
 
-/data/open-c3/open-c3.sh sup
-/data/open-c3/open-c3.sh dup
+$C3BASEPATH/open-c3/open-c3.sh sup
+$C3BASEPATH/open-c3/open-c3.sh dup
 
 echo "upgrade done. !!!"

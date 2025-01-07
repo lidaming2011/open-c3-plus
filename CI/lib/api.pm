@@ -42,7 +42,8 @@ hook 'before' => sub {
            || $uri =~ m{^/to3part}
            || $uri =~ m{^/exalarm/}
            || $uri =~ m{^/exmesg/}
-           || $uri =~ m{^/demo/};
+           || $uri =~ m{^/demo/}
+           || $uri =~ m{^/googleplay/review/record};
 
     halt( +{ stat => $JSON::false, code => 10000 } ) 
         unless (  cookie( $cookiekey ) || ( request->headers->{appkey} && request->headers->{appname} ) );

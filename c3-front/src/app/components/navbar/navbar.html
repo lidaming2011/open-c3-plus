@@ -260,6 +260,20 @@
 
         </li>
  
+      <!-- 运营 -->
+        <li ng-if="nav.user.menu['运营'] == 2" class="dropdown nav-padding" uib-dropdown>
+            <a href="javascript:void(0)" class="dropdown-toggle fw600 p15 lh30 ripple" uib-dropdown-toggle>
+                <span>{{'C3T.运营'|translate}}</span>
+                <span class="caret caret-tp hidden-xs"></span>
+            </a>
+            <ul class="dropdown-menu-right list-group dropdown-persist w250" uib-dropdown-menu>
+                <li ng-if="nav.user.menu['运营.GooglePlay评论管理'] == 2" class="dropdown-header clearfix" style="border: 0"> <div class="pull-left ml10">GooglePlay</div> </li>
+                <li ng-if="nav.user.menu['运营.GooglePlay评论管理'] == 2" class="list-group-item">
+                    <a style="padding: 8px 9px 8px 37px;" ui-sref="home.googleplayreview({treeid: nav.state.params.treeid})" class="animated animated-short fadeInUp" ><i class="fa fa-wrench" aria-hidden="true"></i>  <span>{{'C3T.GooglePlay评论管理'|translate}}</span> </a>
+                </li>
+            </ul>
+        </li>
+
     </ul>
 
     <ul class="nav navbar-nav navbar-right" style="margin-right:0">
