@@ -1035,3 +1035,26 @@ UNIQUE KEY `uniq_user_caseuuid` (`user`,`caseuuid`)
 # v2.6.0 sql openc3_monitor_self_healing_task modify instance to 300
 ALTER TABLE  openc3_monitor_self_healing_task modify `instance` varchar(300) DEFAULT NULL COMMENT '目标';
 
+# v2.6.0 sql openc3_ci_googleplay_review create
+create table if not exists `openc3_ci_googleplay_review`(
+`id` int(16) unsigned not null primary key auto_increment comment 'id',
+`review_id`  VARCHAR(100)   comment '评论id',
+`author_name`  VARCHAR(200)   comment '评论的作者',
+`package_name`  VARCHAR(200)   comment '包名，别名',
+`app_package_name`  VARCHAR(200)   comment '包的名称,如com.foo.myapp',
+`device_name`  VARCHAR(80)   comment '设备名称',
+`comment_time_seconds`  VARCHAR(20)   comment '评论时间',
+`thumbs_up_count`  VARCHAR(10)   comment '点赞次数',
+`thumbs_down_count`  VARCHAR(10)   comment '踩次数',
+`reviewer_language`  VARCHAR(20)   comment '评论使用的语言',
+`app_version_code`  VARCHAR(40)   comment 'app的版本编号',
+`app_version_name`  VARCHAR(40)   comment 'app的版本名字',
+`android_os_version`  VARCHAR(20)   comment '安卓手机版本',
+`star_rating`  VARCHAR(10)   comment '几颗星',
+`user_comment`  VARCHAR(5000)   comment '用户评论内容',
+`developer_comment`  VARCHAR(5000)   comment '开发者回复评论的内容',
+`callback`  VARCHAR(300)   comment '回调地址,用于回复评论',
+`create_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+UNIQUE KEY `uniq_review_id` (`review_id`),
+KEY `idx_app_package_name` (`app_package_name`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 comment='google play评论';
