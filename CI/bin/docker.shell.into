@@ -78,5 +78,13 @@ else
     };
 
     print "ishare: $ishare\n";
-    system "${sudo}/usr/bin/docker run -it --rm -v $logpath/build_temp_projectid/$uuid:/build -v /data/open-c3-data/ci-docker-share:/cishare -v /data/open-c3-data/ci-docker-share-id/$o{projectid}:$ishare --workdir=/build/data --name dockershell_ci_$uuid $o{image} $entrypoint";
+    my $xx = `docker inspect dns 2>/dev/null |grep -i '"Gateway"'|awk '{print \$2}'|awk -F '"' '{print \$2}'# | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$'|head -n 1`;
+    chomp $xx;
+    my $dnsx = '';
+    if( $xx)
+    {
+        print "dns: [$xx]\n";
+        $dnsx = "--dns=$xx";
+    }
+    system "${sudo}/usr/bin/docker run -it --rm $dnsx -v $logpath/build_temp_projectid/$uuid:/build -v /data/open-c3-data/ci-docker-share:/cishare -v /data/open-c3-data/ci-docker-share-id/$o{projectid}:$ishare --workdir=/build/data --name dockershell_ci_$uuid $o{image} $entrypoint";
 }
