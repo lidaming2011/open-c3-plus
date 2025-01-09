@@ -94,7 +94,16 @@ return sub
     }
     else
     {
-        push @cmd, "docker run $dockerlimit -v $dpathx:/build -v /data/open-c3-data/ci-docker-share:/cishare -v /data/open-c3-data/ci-docker-share-id/$projectid:$ishare --name '$dname' --workdir=/build/data '$buildimage' $entrypoint";
+        my $xx = `docker inspect dns 2>/dev/null |grep -i '"Gateway"'|awk '{print \$2}'|awk -F '"' '{print \$2}'# | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$'|head -n 1`;
+        chomp $xx;
+        my $dnsx = '';
+        if( $xx )
+        {
+            print "dns: [$xx]\n";
+            $dnsx = "--dns=$xx";
+        }
+
+        push @cmd, "docker run $dockerlimit $dnsx -v $dpathx:/build -v /data/open-c3-data/ci-docker-share:/cishare -v /data/open-c3-data/ci-docker-share-id/$projectid:$ishare --name '$dname' --workdir=/build/data '$buildimage' $entrypoint";
     }
 
     map{ $logs->die( "run build.merge.makedist.docker fail:$!" ) if system $_; }@cmd;
